@@ -26,6 +26,7 @@ const Header = () => {
   return (
     <header className="border-b-2 border-gray-300">
         <nav className="flex items-center justify-between p-6 lg:p-8 w-full" aria-label="Global">
+            
             {/* Logo */}
             <div className="flex flex-1 items-center">  
                 <Link href="/">
@@ -35,6 +36,7 @@ const Header = () => {
 
             {/* Links and Account Section */}
             <div className="flex items-center gap-x-12 ml-auto">  {/* Added ml-auto here */}
+
                 {/* Links */}
                 <div className="flex gap-x-6">
                     {navigation.map((item: NavigationType) => (
@@ -50,6 +52,7 @@ const Header = () => {
                 <Link href="/" onClick={handleLogout}>
                     <Image className="rounded-full shadow" width={60} height={60} src={user_logo} alt="user_logo"/>
                 </Link>
+
             </div>
         </nav>
     </header>

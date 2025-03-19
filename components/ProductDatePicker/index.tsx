@@ -3,11 +3,22 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { enGB } from 'date-fns/locale';
 
-// Simulated function to fetch booked dates from a database
+// Function to fetch booked dates from the server
 const fetchBookedDates = async (productId: number): Promise<Date[]> => {
-  // Replace with real API call
-  return [new Date(2025, 7, 8), new Date(2025, 7, 9)]; // Example: 8th-9th August
+  const response = await fetch(`/api/booked_dates/${productId}`);
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch booked dates');
+  }
+
+  const data = await response.json();
+  if (!data || !Array.isArray(data)) {
+    return []; // If no data or data is malformed, return an empty array
+  }
+
+  return data.map((dateStr: string) => new Date(dateStr)); // Convert strings to Date objects
 };
 
 const calculateBlockedDates = (bookedDates: Date[]): Date[] => {
@@ -26,20 +37,52 @@ const calculateBlockedDates = (bookedDates: Date[]): Date[] => {
 export default function ProductDatePicker({ productId }: { productId: number }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [blockedDates, setBlockedDates] = useState<Date[]>([]);
+  const [message, setMessage] = useState<string>(''); // To display success or error messages
 
+  // Fetch booked dates when the component is mounted or productId changes
   useEffect(() => {
     fetchBookedDates(productId).then((booked) => {
       setBlockedDates(calculateBlockedDates(booked));
+    }).catch((error) => {
+      setMessage('Error fetching booked dates.');
+      console.error(error);
     });
   }, [productId]);
 
-  const handleReserve = () => {
-    // Handle the reservation logic here
-    if (selectedDate) {
-      alert(`You have selected: ${selectedDate.toLocaleDateString()}`);
-    } else {
-      alert('Please select a date to reserve.');
+  // Handle the reserve button click
+  const handleReserve = async () => {
+    if (!selectedDate) {
+      setMessage('Please select a date to reserve.');
+      return;
     }
+
+    try {
+      const response = await fetch(`/api/reserve/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ selectedDate: selectedDate.toISOString() }), // Send the date as a string in ISO format
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message || 'Reservation successful!');
+      } else {
+        setMessage(data.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      setMessage('An error occurred while reserving the date.');
+      console.error(error);
+    }
+  };
+
+  const dayClassName = (date: Date) => {
+    const isBlocked = blockedDates.some(
+      (blockedDate) => blockedDate.toDateString() === date.toDateString()
+    );
+    return isBlocked ? 'text-gray-500' : ''; // Lighter text color for blocked dates
   };
 
   return (
@@ -51,8 +94,12 @@ export default function ProductDatePicker({ productId }: { productId: number }) 
         excludeDates={blockedDates}
         dateFormat="dd/MM/yyyy"
         className="border px-4 py-2 rounded-lg"
-        inline // This prop makes the calendar always visible
+        inline // Always display the calendar
+        dayClassName={dayClassName} // Apply custom styling to blocked dates
+        locale={enGB} // Set the locale to English (GB) to start the week on Monday
       />
+      {/* Message */}
+      {message && <div className="mt-2 text-red-500">{message}</div>}
       {/* Reserve Button */}
       <button
         className="w-[320px] bg-black text-white py-2 mt-4 rounded-lg text-center"
