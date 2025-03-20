@@ -14,7 +14,6 @@ export default function Home() {
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (!user) {
-      // If no user is found in localStorage, redirect to login page
       router.push('/');
     }
   }, [router]);

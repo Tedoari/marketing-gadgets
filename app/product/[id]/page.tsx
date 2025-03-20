@@ -13,49 +13,70 @@ export default function ProductDetails() {
   const { id } = useParams();
   const productId = parseInt(id as string, 10);
   const product = products.find((product) => product.id === productId);
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [mainImage, setMainImage] = useState<string>(product?.images[0] || "");
 
   if (!product) {
     return <div>Product not found!</div>;
   }
 
+  // Function to handle image change
+  const handleImageClick = (image: string) => {
+    setMainImage(image);
+  };
+
   return (
     <>
       <Header />
       <div className="p-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left Column: Product Image */}
+        
+        {/* Left Column */}
         <div>
-          {product.image ? (
-            <img src={product.image} alt={product.title} className="w-full h-96 object-cover rounded-lg" />
+          {/* Product Name */}
+          <h1 className="text-3xl font-bold">{product.title}</h1>
+
+          {/* Main Product Image */}
+          {mainImage ? (
+            <img src={mainImage} alt={product.title} className="w-full h-96 object-cover rounded-lg mt-4" />
           ) : (
-            <div className="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg">
+            <div className="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg mt-4">
               <span className="text-gray-500">No Image Available</span>
             </div>
           )}
 
-          {/* Product Details Under Image */}
-          <div className="mt-4">
-            <h1 className="text-3xl font-bold">{product.title}</h1>
+          {/* Thumbnail Images */}
+          <div className="mt-4 flex space-x-2">
+            {product.images.map((thumbnail, index) => (
+              <img 
+                key={index}
+                src={thumbnail} 
+                alt={`Thumbnail ${index + 1}`}
+                className="w-16 h-16 object-cover rounded-md cursor-pointer hover:opacity-75"
+                onClick={() => handleImageClick(thumbnail)}
+              />
+            ))}
+          </div>
 
-            {/* Expandable Section */}
-            <div className="mt-4 border rounded-lg p-4 shadow-sm">
-              <details>
-                <summary className="font-semibold cursor-pointer">
-                  The Well Known {product.title}
-                </summary>
-                <p className="text-gray-600 mt-2">
-                  Answer the frequently asked question in a simple sentence, a longish paragraph, or even in a list.
-                </p>
-              </details>
-            </div>
+          {/* Expandable Section */}
+          <div className="mt-4 border rounded-lg p-4 shadow-sm">
+            <details>
+              <summary className="font-semibold cursor-pointer">
+                The Well Known {product.title}
+              </summary>
+              <p className="text-gray-600 mt-2">
+                Answer the frequently asked question in a simple sentence, a longish paragraph, or even in a list.
+              </p>
+            </details>
           </div>
         </div>
 
-          <div className="mt-4">
-            <ProductDatePicker productId={productId} />
-          </div>
-
+        {/* Right Column: Date Picker */}
+        <div className="flex items-center justify-center mt-4 md:mt-0">
+          <ProductDatePicker productId={productId} />
         </div>
+        
+      </div>
       <Footer />
     </>
   );

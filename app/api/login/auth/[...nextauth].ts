@@ -1,8 +1,8 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import prisma from '@/lib/prisma'; // Adjust import if needed
-import { JWT } from 'next-auth/jwt';  // Import JWT type
+import prisma from '@/lib/prisma'; 
+import { JWT } from 'next-auth/jwt';  
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,36 +14,36 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null; // If no email or password is provided, return null
+          return null; 
         }
 
-        // Find user by email in the updated 'user' table
+        // Find user by email 
         const user = await prisma.user.findFirst({
-          where: { email: credentials.email },  // Search by email
+          where: { email: credentials.email },  
         });
 
-        // If user exists and password matches, return user details
+        // If user and password are correct, return user details
         if (user && user.password === credentials.password) {
           return {
-            id: user.id.toString(),  // Use id from 'user' model
+            id: user.id.toString(),
             email: user.email,
-            password: user.password, // You can include password but typically avoid including it in the session
+            password: user.password, 
           };
         }
 
-        return null; // Invalid credentials or user not found
+        return null; 
       },
     }),
   ],
   session: {
-    strategy: 'jwt',  // Use JWT-based sessions
+    strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
         // Add the user data to the token on login
-        token.id = user.id;  // Store the user ID in the token
-        token.email = user.email;  // Store the user email in the token
+        token.id = user.id;
+        token.email = user.email;  
       }
       return token;  // Return the token with user data
     },
@@ -56,8 +56,8 @@ export const authOptions: NextAuthOptions = {
       return session;  // Return the updated session
     },
   },
-  adapter: PrismaAdapter(prisma),  // Use the Prisma Adapter
-  secret: process.env.NEXTAUTH_SECRET,  // Set your NextAuth secret in the .env
+  adapter: PrismaAdapter(prisma),  
+  secret: process.env.NEXTAUTH_SECRET,  
 };
 
 export default NextAuth(authOptions);

@@ -35,7 +35,7 @@ const Header = () => {
             </div>
 
             {/* Links and Account Section */}
-            <div className="flex items-center gap-x-12 ml-auto">  {/* Added ml-auto here */}
+            <div className="flex items-center gap-x-12 ml-auto">  
 
                 {/* Links */}
                 <div className="flex gap-x-6">

@@ -10,7 +10,7 @@ import { products, Category } from '@/app/data/products';  // Import products an
 export default function ProductGallery() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('Popular');
 
-  // Filter products on category and if it's the popular category, show all products
+  // Filter products on category, if its the popular category show all products
   const filteredProducts = products.filter(
     (product) => selectedCategory === 'Popular' || product.categories.includes(selectedCategory)
   );
@@ -46,9 +46,9 @@ export default function ProductGallery() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredProducts.map((product) => (
           <div key={product.id} className="border rounded-lg shadow-sm flex flex-col h-100 p-4">
-            {product.image ? (
+            {product.images[0] ? (
               <Image
-                src={product.image}
+                src={product.images[0]}
                 alt={product.title}
                 width={600}
                 height={400}

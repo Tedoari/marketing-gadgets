@@ -8,12 +8,12 @@ import { useRouter } from 'next/navigation';
 const LoginPage = () => {
   const router = useRouter();
 
-  const [email, setEmail] = useState<string>(''); // Manage email state
-  const [password, setPassword] = useState<string>(''); // Manage password state
-  const [errorMessage, setErrorMessage] = useState<string>(''); // Manage error messages
-  const [successMessage, setSuccessMessage] = useState(''); // Manage Success messages
-  const [loading, setLoading] = useState<boolean>(false); // Manage loading state
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Flag for tracking login state
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>(''); 
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setLoading] = useState<boolean>(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   // Check if the user is already logged in
   useEffect(() => {
@@ -115,7 +115,7 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} // Sets the password input
+                onChange={(e) => setPassword(e.target.value)} // Password input which i think at some point should be hashed
               />
             </div>
 
@@ -133,9 +133,9 @@ const LoginPage = () => {
             <button
               type="submit"
               className="p-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition duration-300"
-              disabled={loading} // Disable button while loading so you can't send multiple requests
+              disabled={isLoading} // Disable button while loading so you can't send multiple requests
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </form>
         </div>

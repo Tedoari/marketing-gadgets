@@ -15,7 +15,7 @@ const fetchBookedDates = async (productId: number): Promise<Date[]> => {
 
   const data = await response.json();
   if (!data || !Array.isArray(data)) {
-    return []; // If no data or data is malformed, return an empty array
+    return []; // Return empty array in case of wrong data
   }
 
   return data.map((dateStr: string) => new Date(dateStr)); // Convert strings to Date objects
@@ -35,11 +35,11 @@ const calculateBlockedDates = (bookedDates: Date[]): Date[] => {
 };
 
 export default function ProductDatePicker({ productId }: { productId: number }) {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [blockedDates, setBlockedDates] = useState<Date[]>([]);
-  const [message, setMessage] = useState<string>(''); // To display success or error messages
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); //No Date
+  const [blockedDates, setBlockedDates] = useState<Date[]>([]); // Empty Array
+  const [message, setMessage] = useState<string>(''); //Empty Message
 
-  // Fetch booked dates when the component is mounted or productId changes
+  // Fetch booked dates with every change
   useEffect(() => {
     fetchBookedDates(productId).then((booked) => {
       setBlockedDates(calculateBlockedDates(booked));
@@ -49,7 +49,7 @@ export default function ProductDatePicker({ productId }: { productId: number }) 
     });
   }, [productId]);
 
-  // Handle the reserve button click
+  // Handle the reserve button 
   const handleReserve = async () => {
     if (!selectedDate) {
       setMessage('Please select a date to reserve.');
@@ -62,7 +62,7 @@ export default function ProductDatePicker({ productId }: { productId: number }) 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ selectedDate: selectedDate.toISOString() }), // Send the date as a string in ISO format
+        body: JSON.stringify({ selectedDate: selectedDate.toISOString() }), // String with date in ISO format (Example: 2025-03-20T15:30:00.000Z)
       });
 
       const data = await response.json();
@@ -78,11 +78,11 @@ export default function ProductDatePicker({ productId }: { productId: number }) 
     }
   };
 
-  const dayClassName = (date: Date) => {
+  const highlightBlockedDays = (date: Date) => {
     const isBlocked = blockedDates.some(
       (blockedDate) => blockedDate.toDateString() === date.toDateString()
     );
-    return isBlocked ? 'text-gray-500' : ''; // Lighter text color for blocked dates
+    return isBlocked ? 'text-gray-500' : ''; 
   };
 
   return (
@@ -94,12 +94,14 @@ export default function ProductDatePicker({ productId }: { productId: number }) 
         excludeDates={blockedDates}
         dateFormat="dd/MM/yyyy"
         className="border px-4 py-2 rounded-lg"
-        inline // Always display the calendar
-        dayClassName={dayClassName} // Apply custom styling to blocked dates
-        locale={enGB} // Set the locale to English (GB) to start the week on Monday
+        inline 
+        dayClassName={highlightBlockedDays} 
+        locale={enGB}
       />
+
       {/* Message */}
       {message && <div className="mt-2 text-red-500">{message}</div>}
+
       {/* Reserve Button */}
       <button
         className="w-[320px] bg-black text-white py-2 mt-4 rounded-lg text-center"
@@ -107,6 +109,7 @@ export default function ProductDatePicker({ productId }: { productId: number }) 
       >
         Reserve
       </button>
+
     </div>
   );
 }
