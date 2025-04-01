@@ -8,7 +8,11 @@ const Footer = () => {
       
       {/* Logo */}
       <div className="fflex flex-col items-start pl-26 mb-2">
-        <Image src={Logo} alt="Allgon Logo" width={150} height={50} />
+        <Image 
+        src={Logo} 
+        alt="Allgon Logo" 
+        width={150} 
+        height={50} />
       </div>
 
       {/* Thin Separator Line */}

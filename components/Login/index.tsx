@@ -70,10 +70,14 @@ const LoginPage = () => {
           <Image
             src={HouseBrand}
             alt="Logo"
-            layout="intrinsic"
             width={4917} // Scaled width to make it fit better, 1.5x
             height={1367} // Scaled height to make it fit better, 1.5x
-            objectFit="contain" 
+            style={{
+              objectFit: 'contain',
+              width: '100%',  // Adjusts to the container width
+              height: 'auto', // Ensures the aspect ratio is maintained
+            }}
+            priority
           />
         </div>
 

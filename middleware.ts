@@ -7,17 +7,22 @@ export async function middleware(req: NextRequest) {
 
   console.log('Middleware triggered for:', pathname);
 
-  if (pathname === '/') {
-    console.log('Skipping redirect for root page');
-    return NextResponse.next();
-  }
-
   // Check if there is a session 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   console.log('JWT token:', token);
 
-  // No Session means redirected to login page
+  if (pathname === '/' && token) {
+    console.log('User is logged in, redirecting to /products');
+    const redirectUrl = new URL('/products', req.url);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (pathname === '/' && !token) {
+    console.log('User is not logged in, allowing access to /');
+    return NextResponse.next(); // Allow access to / if user is not logged in
+  }
+
   if (!token) {
     console.log('No token and redirecting to login page');
     const loginUrl = new URL('/', req.url); 
@@ -29,5 +34,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/products', '/contact', '/information', '/account', '/product', '/product/:id*'], // These are all pages you will get redirected from to login
+  matcher: ['/products', '/contact', '/information', '/account', '/product', '/product/:id*', '/'], // These are all pages you will get redirected from to login
 };
