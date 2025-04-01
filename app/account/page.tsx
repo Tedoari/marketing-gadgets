@@ -8,24 +8,30 @@ import UserDashboard from "@/components/UserDashboard";
 import UserOrders from "@/components/UserOrders";
 import UserAdresses from "@/components/UserAdresses";
 import UserDetails from "@/components/UserDetails";
-import { Home as HomeIcon, Package, MapPin, User, LogOut } from "lucide-react";
+import { Activity, Package, MapPin, User, LogOut } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Dashboard");
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) {
-      // Redirect to login page if no user is found
-      router.push("/");
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const user = localStorage.getItem("user");
+  //   if (!user) {
+  //     // Redirect to login page if no user is found
+  //     router.push("/");
+  //   }
+  // }, [router]);
+
+  const handleLogout = () => {
+    console.log('logged out')
+    localStorage.removeItem('user'); // Remove the user data from localStorage
+    router.push("/");
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case "Dashboard":
-        return <UserDashboard />;
+        return <UserDashboard status={"shipped"} />;
       case "Orders":
         return <UserOrders />;
       case "Addresses":
@@ -33,7 +39,7 @@ export default function Home() {
       case "Account Details":
         return <UserDetails />;
       default:
-        return <UserDashboard />;
+        return <UserDashboard status={"shipped"} />;
     }
   };
 
@@ -45,7 +51,7 @@ export default function Home() {
         <aside className="w-64 bg-white shadow-md p-4">
           <nav className="space-y-2">
             <SideMenuItem
-              icon={<Home />}
+              icon={<Activity />}
               label="Dashboard"
               active={activeTab === "Dashboard"}
               onClick={() => setActiveTab("Dashboard")}
@@ -68,7 +74,7 @@ export default function Home() {
               active={activeTab === "Account Details"}
               onClick={() => setActiveTab("Account Details")}
             />
-            <SideMenuItem icon={<LogOut />} label="Logout" onClick={() => console.log("Logging out...")} />
+            <SideMenuItem icon={<LogOut />} label="Logout" onClick={handleLogout} />
           </nav>
         </aside>
 
@@ -87,7 +93,7 @@ interface SideMenuItemProps {
   onClick?: () => void;
 }
 
-const SideMenuItem = ({ icon, label, active = false, onClick }: SideMenuItemProps) => {
+const SideMenuItem: React.FC<SideMenuItemProps> = ({ icon, label, active = false, onClick }: SideMenuItemProps) => {
   return (
     <button
       onClick={onClick}

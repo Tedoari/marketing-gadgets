@@ -1,9 +1,10 @@
 'use client'; // Mark as client to use useState
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import HouseBrand from "@/public/images/Logo_Vertical_Color_Logos.png";
 import { useRouter } from 'next/navigation'; 
+import { signIn } from 'next-auth/react'; // Use NextAuth's signIn method for login
 
 const LoginPage = () => {
   const router = useRouter();
@@ -13,16 +14,15 @@ const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState<string>(''); 
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setLoading] = useState<boolean>(false); 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  // Check if the user is already logged in
-  useEffect(() => {
-    const user = localStorage.getItem('user'); // Check if user exists
-    if (user) {
-      setIsLoggedIn(true); 
-      router.push('/products');
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const user = localStorage.getItem('user'); // Check if user exists
+  //   if (user) {
+  //     setIsLoggedIn(true); 
+  //     router.push('/products');
+  //   }
+  // }, [router]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,24 +39,21 @@ const LoginPage = () => {
     }
 
     try {
-      // Make api request 
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      // Make api request using NextAuth's signIn function
+      const response = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMessage('Login successful!');
-        localStorage.setItem('user', JSON.stringify(data.user)); // Save the user to localStorage
-        setIsLoggedIn(true); 
-        router.push('/products'); 
+      
+      console.log('SignIn response:', response);
+      if (response?.error) {
+        setErrorMessage(response.error || 'Login failed');
       } else {
-        setErrorMessage(data.error || 'Login failed');
+        setSuccessMessage('Login successful!');
+        // setIsLoggedIn(true); 
+        router.push('/products'); 
       }
     } catch (error) {
       setErrorMessage('An error occurred while logging in.');
@@ -65,11 +62,6 @@ const LoginPage = () => {
       setLoading(false); 
     }
   };
-
-  // If user is already logged in, redirect them away from login page
-  if (isLoggedIn) {
-    return null; 
-  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
@@ -115,7 +107,7 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} // Password input which i think at some point should be hashed
+                onChange={(e) => setPassword(e.target.value)} // Password input which should eventually be hashed
               />
             </div>
 

@@ -7,16 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id       Int    @id @default(autoincrement())
-  email    String @unique(map: "email_UNIQUE") @db.VarChar(45) 
-  password String @db.VarChar(45) 
-  name     String @db.VarChar(100) 
-}
-
 model booking {
   id        Int      @id @default(autoincrement())
   productId Int
   reservedDate DateTime
+}
+
+model user {
+  id       Int    @id @default(autoincrement())
+  email    String @unique(map: "email_UNIQUE") @db.VarChar(45)
+  password String @db.VarChar(45) 
+  name     String @db.VarChar(100)
 }
 

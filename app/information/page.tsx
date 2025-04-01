@@ -10,13 +10,13 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
     const router = useRouter();
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      // If no user is found in localStorage, redirect to login page
-      router.push('/');
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const user = localStorage.getItem('user');
+  //   if (!user) {
+  //     // If no user is found in localStorage, redirect to login page
+  //     router.push('/');
+  //   }
+  // }, [router]);
   return (
     <>
     

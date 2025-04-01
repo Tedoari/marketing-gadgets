@@ -11,12 +11,12 @@ import Products from "@/components/Products"
 export default function Home() {
     const router = useRouter();
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      router.push('/');
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const user = localStorage.getItem('user');
+  //   if (!user) {
+  //     router.push('/');
+  //   }
+  // }, [router]);
   return (
     <>
     

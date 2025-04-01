@@ -29,5 +29,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['@app/products', '/contact', '/information', '/account'], // These are all pages you will get redirected from to login
+  matcher: ['/products', '/contact', '/information', '/account', '/product', '/product/:id*'], // These are all pages you will get redirected from to login
 };
