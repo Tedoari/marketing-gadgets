@@ -58,8 +58,10 @@ export default function Home() {
       <Header />
       <main className="container mx-auto p-8 min-h-screen flex flex-col">
         <div className="flex justify-between mb-8">
+          
           {/* Contact Info Section */}
           <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
+
             <h2 className="text-2xl font-semibold mb-4">Contact Info</h2>
             <p className="mb-2">
               Email: <a href="mailto:marketing@allgon.com" className="text-blue-500">marketing@allgon.com</a>
@@ -72,6 +74,18 @@ export default function Home() {
                 Jadestraat 9 - 2665 NS Bleiswijk
               </a>
             </p>
+
+            {/* Google Maps Embed */}
+            <div className="mt-4">
+              <iframe
+                className="w-full h-64 pt-2"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2433.235221387949!2d4.526721076537157!3d52.009554471930996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c5d9742a108d5d%3A0x8b2eaf6f20f5b6fa!2sJadestraat%209%2C%202665%20NS%20Bleiswijk%2C%20Netherlands!5e0!3m2!1sen!2s!4v1712064845432!5m2!1sen!2s"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+
           </div>
 
           {/* Contact Form Section */}

@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
 
   if (pathname === '/' && !token) {
     console.log('User is not logged in, allowing access to /');
-    return NextResponse.next(); // Allow access to / if user is not logged in
+    return NextResponse.next(); 
   }
 
   if (!token) {

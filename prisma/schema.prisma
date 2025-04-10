@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum role {
+  user
+  admin
+}
+
 model booking {
   id        Int      @id @default(autoincrement())
   productId Int
@@ -18,5 +23,7 @@ model user {
   email    String @unique(map: "email_UNIQUE") @db.VarChar(45)
   password String @db.VarChar(45) 
   name     String @db.VarChar(100)
+  role     role   @default(user)
+  image    String? @db.VarChar(255)  
 }
 

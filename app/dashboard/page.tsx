@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { signOut } from 'next-auth/react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import UserDashboard from "@/components/UserDashboard";
-import UserCurrentOrders from "@/components/UserCurrentOrders";
-import UserRecentOrders from "@/components/UserRecentOrders";
+import AdminDashboard from "@/components/AdminDashboard";
+import AdminOrders from "@/components/AdminOrders";
 import UserAdresses from "@/components/UserAdresses";
 import UserDetails from "@/components/UserDetails";
 import { Activity, Package, MapPin, User, LogOut } from "lucide-react";
@@ -24,7 +23,7 @@ export default function Home() {
   //   }
   // }, [router]);
 
-const handleLogout = async () => {
+  const handleLogout = async () => {
     console.log('logged out')
     await signOut({ redirect: true, callbackUrl: '/' });
 };
@@ -32,20 +31,15 @@ const handleLogout = async () => {
   const renderContent = () => {
     switch (activeTab) {
       case "Dashboard":
-        return <UserDashboard status={"shipped"} />;
+        return <AdminDashboard />;
       case "Orders":
-        return (
-        <>
-          <UserCurrentOrders /> 
-          <UserRecentOrders />
-        </>
-        );
+        return <AdminOrders />;
       case "Addresses":
         return <UserAdresses />;
       case "Account Details":
         return <UserDetails />;
       default:
-        return <UserDashboard status={"shipped"} />;
+        return <AdminDashboard />;
     }
   };
 

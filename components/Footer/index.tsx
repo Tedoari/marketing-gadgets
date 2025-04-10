@@ -4,7 +4,7 @@ import Logo from "@/public/images/Allgon_BLUE.png";
 
 const Footer = () => {
   return (
-    <footer className="!bg-white border-t-2 border-gray-300 w-full py-6">
+    <footer className="!bg-white border-t-2 border-gray-300 w-full py-3 lg:py-4">
       
       {/* Logo */}
       <div className="fflex flex-col items-start pl-26 mb-2">

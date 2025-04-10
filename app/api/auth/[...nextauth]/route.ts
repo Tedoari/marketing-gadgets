@@ -1,7 +1,7 @@
-// app/api/auth/[...nextauth]/route.ts
-import NextAuth, {NextAuthOptions} from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma"; // Your Prisma client
+import { user } from '@prisma/client'
 import { JWT } from "next-auth/jwt";
 
 // Define NextAuth options
@@ -18,12 +18,19 @@ const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
+        const user: user | null = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
         if (user && user.password === credentials.password) {
-          return { id: user.id.toString(), email: user.email, name: user.name };
+          // Return the user with the image URL if found
+          return {
+            id: user.id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            image: user.image,  
+          };
         }
         return null;
       },
@@ -31,7 +38,7 @@ const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt", // Use JWT for session management
-    maxAge:60 * 30,
+    // maxAge: 60 * 30,
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }) {
@@ -39,6 +46,8 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
+        token.image = user.image;  
       }
       return token;
     },
@@ -47,6 +56,8 @@ const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
+        session.user.role = token.role;
+        session.user.image = token.image;  
       }
       return session;
     },
