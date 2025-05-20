@@ -12,18 +12,53 @@ enum role {
   admin
 }
 
-model booking {
-  id        Int      @id @default(autoincrement())
-  productId Int
-  reservedDate DateTime
+enum OrderStatus {
+  pending
+  confirmed
+  send
+  arrived
+  cancelled
+}
+
+model address {
+  id         Int     @id @default(autoincrement())
+  street     String  @db.VarChar(255)
+  city       String  @db.VarChar(255)
+  postalCode String  @db.VarChar(50)
+  country    String  @db.VarChar(100)
+  users      user[]
 }
 
 model user {
-  id       Int    @id @default(autoincrement())
-  email    String @unique(map: "email_UNIQUE") @db.VarChar(45)
-  password String @db.VarChar(45) 
-  name     String @db.VarChar(100)
-  role     role   @default(user)
-  image    String? @db.VarChar(255)  
+  id           Int       @id @default(autoincrement())
+  email        String    @unique(map: "email_UNIQUE") @db.VarChar(45)
+  password     String    @db.VarChar(45)
+  name         String    @db.VarChar(100)
+  role         role      @default(user)
+  image        String?   @db.VarChar(255)
+  companyName  String?   @db.VarChar(255)
+  bookings     booking[]
+  addressId    Int?
+  address      address?  @relation(fields: [addressId], references: [id])
 }
 
+model product {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)   // Added name field
+  measurements String?  @db.VarChar(255)
+  weight       Float?
+  bookings     booking[]
+}
+
+
+model booking {
+  id          Int         @id @default(autoincrement())
+  productId   Int
+  product     product     @relation(fields: [productId], references: [id])
+  startDate   DateTime
+  endDate     DateTime
+  userId      Int
+  user        user        @relation(fields: [userId], references: [id])
+  address     String      @db.VarChar(255) // snapshot of address for booking
+  orderStatus OrderStatus @default(pending)
+}

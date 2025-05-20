@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminDashboard from "@/components/AdminDashboard";
 import AdminOrders from "@/components/AdminOrders";
-import UserAdresses from "@/components/UserAdresses";
+import AdminUsers from "@/components/AdminUsers";
 import UserDetails from "@/components/UserDetails";
 import { Activity, Package, MapPin, User, LogOut } from "lucide-react";
 
@@ -34,8 +34,8 @@ export default function Home() {
         return <AdminDashboard />;
       case "Orders":
         return <AdminOrders />;
-      case "Addresses":
-        return <UserAdresses />;
+      case "Users":
+        return <AdminUsers />;
       case "Account Details":
         return <UserDetails />;
       default:
@@ -63,10 +63,10 @@ export default function Home() {
               onClick={() => setActiveTab("Orders")}
             />
             <SideMenuItem
-              icon={<MapPin />}
-              label="Addresses"
-              active={activeTab === "Addresses"}
-              onClick={() => setActiveTab("Addresses")}
+              icon={<User />}
+              label="Users"
+              active={activeTab === "Users"}
+              onClick={() => setActiveTab("Users")}
             />
             <SideMenuItem
               icon={<User />}

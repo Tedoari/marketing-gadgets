@@ -1,115 +1,119 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { enGB } from 'date-fns/locale';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { enGB } from "date-fns/locale";
 
-// Function to fetch booked dates from the server
-const fetchBookedDates = async (productId: number): Promise<Date[]> => {
-  const response = await fetch(`/api/booked_dates/${productId}`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch booked dates');
-  }
-
-  const data = await response.json();
-  if (!data || !Array.isArray(data)) {
-    return []; // Return empty array in case of wrong data
-  }
-
-  return data.map((dateStr: string) => new Date(dateStr)); // Convert strings to Date objects
+const fetchBookedDates = async (
+  productId: number
+): Promise<{ startDate: string; endDate: string }[]> => {
+  const res = await fetch(`/api/booked_dates/${productId}`);
+  if (!res.ok) throw new Error("Failed to fetch booked dates");
+  return res.json();
 };
 
-const calculateBlockedDates = (bookedDates: Date[]): Date[] => {
+const calculateBlockedDates = (
+  bookings: { startDate: string; endDate: string }[]
+): Date[] => {
   const blocked = new Set<number>();
 
-  bookedDates.forEach((date) => {
-    const time = date.getTime();
-    for (let i = -7; i <= 14; i++) {
-      blocked.add(new Date(time + i * 86400000).getTime());
+  bookings.forEach(({ startDate, endDate }) => {
+    const start = new Date(startDate).getTime();
+    const end = new Date(endDate).getTime();
+    for (
+      let time = start - 7 * 86400000;
+      time <= end + 14 * 86400000;
+      time += 86400000
+    ) {
+      blocked.add(time);
     }
   });
 
   return Array.from(blocked).map((t) => new Date(t));
 };
 
-export default function ProductDatePicker({ productId }: { productId: number }) {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null); //No Date
-  const [blockedDates, setBlockedDates] = useState<Date[]>([]); // Empty Array
-  const [message, setMessage] = useState<string>(''); //Empty Message
+export default function ProductDateRangePicker({
+  productId,
+}: {
+  productId: number;
+}) {
+  const router = useRouter();
+  const [range, setRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [startDate, endDate] = range;
+  const [blockedDates, setBlockedDates] = useState<Date[]>([]);
+  const [message, setMessage] = useState("");
 
-  // Fetch booked dates with every change
   useEffect(() => {
-    fetchBookedDates(productId).then((booked) => {
-      setBlockedDates(calculateBlockedDates(booked));
-    }).catch((error) => {
-      setMessage('Error fetching booked dates.');
-      console.error(error);
-    });
+    fetchBookedDates(productId)
+      .then((bookings) => setBlockedDates(calculateBlockedDates(bookings)))
+      .catch(() => setMessage("Failed to load blocked dates"));
   }, [productId]);
 
-  // Handle the reserve button 
-  const handleReserve = async () => {
-    if (!selectedDate) {
-      setMessage('Please select a date to reserve.');
+  const isRangeBlocked = (start: Date | null, end: Date | null) => {
+    if (!start || !end) return false;
+    return blockedDates.some(
+      (blockedDate) => blockedDate >= start && blockedDate <= end
+    );
+  };
+
+  const filterBlockedDates = (date: Date) => {
+    return !blockedDates.some(
+      (blockedDate) => blockedDate.toDateString() === date.toDateString()
+    );
+  };
+
+  const handleChange = (dates: [Date | null, Date | null]) => {
+    const [start, end] = dates;
+
+    if (start && end && isRangeBlocked(start, end)) {
+      setMessage(
+        "Selected date range overlaps blocked dates. Please choose another range."
+      );
+      setRange([start, null]);
       return;
     }
 
-    try {
-      const response = await fetch(`/api/reserve/${productId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ selectedDate: selectedDate.toISOString() }), // String with date in ISO format (Example: 2025-03-20T15:30:00.000Z)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage(data.message || 'Reservation successful!');
-      } else {
-        setMessage(data.message || 'Something went wrong.');
-      }
-    } catch (error) {
-      setMessage('An error occurred while reserving the date.');
-      console.error(error);
-    }
+    setMessage("");
+    setRange(dates);
   };
 
-  const highlightBlockedDays = (date: Date) => {
-    const isBlocked = blockedDates.some(
-      (blockedDate) => blockedDate.toDateString() === date.toDateString()
-    );
-    return isBlocked ? 'text-gray-500' : ''; 
+  const handleReserve = () => {
+    if (!startDate || !endDate) return;
+    const query = new URLSearchParams({
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      productId: productId.toString(),
+    });
+    router.push(`/confirmation?${query.toString()}`);
   };
 
   return (
     <div className="flex flex-col items-center">
-      <label className="font-semibold mb-2">Select a Date</label>
+      <label className="font-semibold mb-2">Select a Date Range</label>
       <DatePicker
-        selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        excludeDates={blockedDates}
+        selectsRange
+        startDate={startDate}
+        endDate={endDate}
+        onChange={handleChange}
+        filterDate={filterBlockedDates}
         dateFormat="dd/MM/yyyy"
         className="border px-4 py-2 rounded-lg"
-        inline 
-        dayClassName={highlightBlockedDays} 
+        inline
         locale={enGB}
+        minDate={new Date()}
       />
-
-      {/* Message */}
-      {message && <div className="mt-2 text-red-500">{message}</div>}
-
-      {/* Reserve Button */}
+      {message && (
+        <div className="mt-2 text-red-600 font-semibold">{message}</div>
+      )}
       <button
-        className="w-[320px] bg-black text-white py-2 mt-4 rounded-lg text-center"
+        className="w-[320px] bg-black text-white py-2 mt-4 rounded-lg disabled:opacity-50"
+        disabled={!startDate || !endDate || message !== ""}
         onClick={handleReserve}
       >
         Reserve
       </button>
-
     </div>
   );
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -13,7 +13,11 @@ interface FormData {
 
 export default function Home() {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    message: "",
+  });
   const [status, setStatus] = useState<string>("");
 
   // useEffect(() => {
@@ -24,7 +28,9 @@ export default function Home() {
   //   }
   // }, [router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -58,19 +64,32 @@ export default function Home() {
       <Header />
       <main className="container mx-auto p-8 min-h-screen flex flex-col">
         <div className="flex justify-between mb-8">
-          
           {/* Contact Info Section */}
           <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
-
             <h2 className="text-2xl font-semibold mb-4">Contact Info</h2>
             <p className="mb-2">
-              Email: <a href="mailto:marketing@allgon.com" className="text-blue-500">marketing@allgon.com</a>
+              Attn:{" "}
+              <a className="text-blue-500">International Marketing Allgon</a>
             </p>
             <p className="mb-2">
-              Phone: <a href="tel:+31704194127" className="text-blue-500">+31 (0)70-41 94 127</a>
+              Email:{" "}
+              <a href="mailto:marketing@allgon.com" className="text-blue-500">
+                marketing@allgon.com
+              </a>
             </p>
             <p className="mb-2">
-              Address: <a href="https://www.google.com/maps?q=Jadestraat+9,+2665+NS+Bleiswijk" target="_blank" className="text-blue-500">
+              Phone:{" "}
+              <a href="tel:+31704194127" className="text-blue-500">
+                +31 (0)70-41 94 127
+              </a>
+            </p>
+            <p className="mb-2">
+              Address:{" "}
+              <a
+                href="https://www.google.com/maps?q=Jadestraat+9,+2665+NS+Bleiswijk"
+                target="_blank"
+                className="text-blue-500"
+              >
                 Jadestraat 9 - 2665 NS Bleiswijk
               </a>
             </p>
@@ -85,7 +104,6 @@ export default function Home() {
                 referrerPolicy="no-referrer-when-downgrade"
               ></iframe>
             </div>
-
           </div>
 
           {/* Contact Form Section */}
@@ -93,7 +111,12 @@ export default function Home() {
             <h2 className="text-2xl font-semibold mb-4">Send Us a Message</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Your Name</label>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Your Name
+                </label>
                 <input
                   type="text"
                   id="name"
@@ -106,7 +129,12 @@ export default function Home() {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Your Email</label>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Your Email
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -119,7 +147,12 @@ export default function Home() {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Your Message</label>
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Your Message
+                </label>
                 <textarea
                   id="message"
                   name="message"

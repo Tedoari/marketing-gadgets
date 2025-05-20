@@ -1,32 +1,41 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; 
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
-export async function GET(request: Request, { params }: { params: { productId: string } }) {
-  const productId = parseInt(params.productId, 10); 
+export async function GET(
+  request: Request,
+  { params }: { params: { productId: string } }
+) {
+  const productId = parseInt(params.productId, 10);
 
-  // If productId is not correct return a 400 error
   if (isNaN(productId)) {
-    return NextResponse.json({ message: 'Incorrect productId' }, { status: 400 });
+    return NextResponse.json(
+      { message: "Incorrect productId" },
+      { status: 400 }
+    );
   }
 
   try {
-    console.log('getting bookings for productId:', productId);
+    console.log("getting bookings for productId:", productId);
 
     const bookings = await prisma.booking.findMany({
       where: {
         productId: productId,
       },
       select: {
-        reservedDate: true,
+        startDate: true,
+        endDate: true,
       },
     });
 
-    console.log('Bookings:', bookings);
+    console.log("Bookings:", bookings);
 
-    return NextResponse.json(bookings.map((booking) => booking.reservedDate));
-
+    // Return the raw start and end dates
+    return NextResponse.json(bookings);
   } catch (error) {
-    console.log('Error fetching bookings:', error);
-    return NextResponse.json({ message: 'Something went wrong', error:(error as Error).message }, { status: 500 });
+    console.error("Error fetching bookings:", error);
+    return NextResponse.json(
+      { message: "Something went wrong", error: (error as Error).message },
+      { status: 500 }
+    );
   }
 }
