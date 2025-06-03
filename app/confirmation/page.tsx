@@ -42,12 +42,31 @@ export default function Confirmation() {
   const isConfirmDisabled =
     !start || !end || (useDifferentAddress && !differentAddress.trim());
 
-  function onConfirm() {
-    alert(
-      `Booking confirmed for ${user?.name} from ${start} to ${end}\nAddress: ${
-        useDifferentAddress ? differentAddress : staticAddress
-      }`
-    );
+  async function onConfirm() {
+    const bookingData = {
+      productId: 1, // Replace with actual productId selection logic
+      startDate: new Date(start),
+      endDate: new Date(end),
+      address: useDifferentAddress ? differentAddress : staticAddress,
+      userId: session?.user?.id,
+    };
+
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!res.ok) throw new Error("Failed to save booking");
+
+      alert("Booking successfully saved!");
+    } catch (err) {
+      console.error(err);
+      alert("There was a problem saving the booking.");
+    }
   }
 
   if (status === "loading") return <div>Loading session...</div>;
