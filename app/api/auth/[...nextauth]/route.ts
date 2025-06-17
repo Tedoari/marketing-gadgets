@@ -1,11 +1,11 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma"; // Your Prisma client
-import { user } from '@prisma/client'
+import { user } from "@prisma/client";
 import { JWT } from "next-auth/jwt";
 
 // Define NextAuth options
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -29,7 +29,7 @@ const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             role: user.role,
-            image: user.image,  
+            image: user.image,
           };
         }
         return null;
@@ -47,7 +47,7 @@ const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
-        token.image = user.image;  
+        token.image = user.image;
       }
       return token;
     },
@@ -57,7 +57,7 @@ const authOptions: NextAuthOptions = {
         session.user.email = token.email;
         session.user.name = token.name;
         session.user.role = token.role;
-        session.user.image = token.image;  
+        session.user.image = token.image;
       }
       return session;
     },

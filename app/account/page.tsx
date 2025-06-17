@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { signOut } from 'next-auth/react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import UserDashboard from "@/components/UserDashboard";
 import UserCurrentOrders from "@/components/UserCurrentOrders";
 import UserRecentOrders from "@/components/UserRecentOrders";
 import UserAdresses from "@/components/UserAdresses";
 import UserDetails from "@/components/UserDetails";
-import { Activity, Package, MapPin, User, LogOut } from "lucide-react";
+import { Package, MapPin, User, LogOut } from "lucide-react";
 
 export default function Home() {
-  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState("Dashboard");
 
   // useEffect(() => {
@@ -25,14 +23,12 @@ export default function Home() {
   // }, [router]);
 
 const handleLogout = async () => {
-    console.log('logged out')
+    console.log('logged out');
     await signOut({ redirect: true, callbackUrl: '/' });
 };
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Dashboard":
-        return <UserDashboard status={"shipped"} />;
       case "Orders":
         return (
         <>
@@ -45,7 +41,10 @@ const handleLogout = async () => {
       case "Account Details":
         return <UserDetails />;
       default:
-        return <UserDashboard status={"shipped"} />;
+        return <>
+        <UserCurrentOrders /> 
+        <UserRecentOrders />
+      </>;
     }
   };
 
@@ -56,12 +55,6 @@ const handleLogout = async () => {
         {/* Sidebar Menu */}
         <aside className="w-64 bg-white shadow-md p-4">
           <nav className="space-y-2">
-            <SideMenuItem
-              icon={<Activity />}
-              label="Dashboard"
-              active={activeTab === "Dashboard"}
-              onClick={() => setActiveTab("Dashboard")}
-            />
             <SideMenuItem
               icon={<Package />}
               label="Orders"

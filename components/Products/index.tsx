@@ -1,5 +1,3 @@
-// components/ProductGallery.tsx
-
 'use client';
 
 import Image from 'next/image';
@@ -10,22 +8,13 @@ import { products, Category } from '@/app/data/products';  // Import products an
 export default function ProductGallery() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('Popular');
 
-  // Filter products on category, if its the popular category show all products
+  // Filter products on category, if it's the Popular category show all products
   const filteredProducts = products.filter(
     (product) => selectedCategory === 'Popular' || product.categories.includes(selectedCategory)
   );
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      
-      {/* Search Bar
-      <div className="relative mb-6">
-        <input
-          type="text"
-          placeholder="Search"
-          className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-gray-300"
-        />
-      </div> */}
       
       {/* Category Filters */}
       <div className="flex gap-3 mb-6">
@@ -61,10 +50,10 @@ export default function ProductGallery() {
             )}
             <h3 className="mt-2 text-lg font-semibold">{product.title}</h3>
             
-            {/* Add a button to navigate */}
+            {/* Button with hover effect and pointer cursor */}
             <div className="mt-4 text-right">
               <Link href={`/product/${product.id}`}>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors duration-200">
                   View Details
                 </button>
               </Link>

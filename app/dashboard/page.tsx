@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { signOut } from 'next-auth/react';
+import { useState } from "react";
+import { signOut } from "next-auth/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminDashboard from "@/components/AdminDashboard";
 import AdminOrders from "@/components/AdminOrders";
 import AdminUsers from "@/components/AdminUsers";
-import UserDetails from "@/components/UserDetails";
-import { Activity, Package, MapPin, User, LogOut } from "lucide-react";
+import AdminProducts from "@/components/AdminProducts";
+import AdminCalendar from "@/components/AdminCalendar";
+import { Activity, Package, User, LogOut } from "lucide-react";
 
 export default function Home() {
-  const router = useRouter();
+  
   const [activeTab, setActiveTab] = useState("Dashboard");
 
   // useEffect(() => {
@@ -24,20 +24,25 @@ export default function Home() {
   // }, [router]);
 
   const handleLogout = async () => {
-    console.log('logged out')
-    await signOut({ redirect: true, callbackUrl: '/' });
-};
+    console.log("logged out");
+    await signOut({ redirect: true, callbackUrl: "/" });
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case "Dashboard":
-        return <AdminDashboard />;
+        return (
+          <div className="min-h-screen p-8 bg-gray-100">
+            <h1 className="text-3xl font-bold mb-6">My Calendar</h1>
+            <AdminCalendar />
+          </div>
+        );
       case "Orders":
         return <AdminOrders />;
       case "Users":
         return <AdminUsers />;
-      case "Account Details":
-        return <UserDetails />;
+      case "Products":
+        return <AdminProducts />;
       default:
         return <AdminDashboard />;
     }
@@ -70,11 +75,15 @@ export default function Home() {
             />
             <SideMenuItem
               icon={<User />}
-              label="Account Details"
-              active={activeTab === "Account Details"}
-              onClick={() => setActiveTab("Account Details")}
+              label="Products"
+              active={activeTab === "Products"}
+              onClick={() => setActiveTab("Products")}
             />
-            <SideMenuItem icon={<LogOut />} label="Logout" onClick={handleLogout} />
+            <SideMenuItem
+              icon={<LogOut />}
+              label="Logout"
+              onClick={handleLogout}
+            />
           </nav>
         </aside>
 
@@ -93,7 +102,12 @@ interface SideMenuItemProps {
   onClick?: () => void;
 }
 
-const SideMenuItem: React.FC<SideMenuItemProps> = ({ icon, label, active = false, onClick }: SideMenuItemProps) => {
+const SideMenuItem: React.FC<SideMenuItemProps> = ({
+  icon,
+  label,
+  active = false,
+  onClick,
+}: SideMenuItemProps) => {
   return (
     <button
       onClick={onClick}

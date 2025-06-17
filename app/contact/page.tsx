@@ -11,7 +11,7 @@ interface FormData {
   message: string;
 }
 
-export default function Home() {
+export default function Contact() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -40,8 +40,7 @@ export default function Home() {
     setStatus("Sending...");
 
     try {
-      // Here, you'll use an API route to send the email. Example using fetch
-      const response = await fetch("/api/send-email", {
+      const response = await fetch("/api/send_email/contact_email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

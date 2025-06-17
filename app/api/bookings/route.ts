@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
 // Create a new booking
@@ -7,16 +9,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { productId, startDate, endDate, userId, address } = body;
 
-    console.log("Received booking:", body);
-
     if (!productId || !startDate || !endDate || !userId || !address) {
-      console.error("Missing fields", {
-        productId,
-        startDate,
-        endDate,
-        userId,
-        address,
-      });
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 }
@@ -33,7 +26,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log("Booking saved:", booking);
     return NextResponse.json(
       { message: "Booking created", booking },
       { status: 201 }
@@ -47,17 +39,20 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Fetch all bookings for a specific userId
-export async function GET(req: NextRequest) {
-  const userId = req.nextUrl.searchParams.get("userId");
+// Get bookings for current user, or all if admin
+export async function GET() {
+  const session = await getServerSession(authOptions);
 
-  if (!userId) {
-    return NextResponse.json({ message: "Missing userId" }, { status: 400 });
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
+
+  const isAdmin = session.user.role === "admin";
 
   try {
     const bookings = await prisma.booking.findMany({
-      where: { userId: Number(userId) },
+      where: isAdmin ? undefined : { userId: Number(session.user.id) },
+      include: { product: true },
       orderBy: { startDate: "desc" },
     });
 
@@ -66,6 +61,52 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching bookings:", error);
     return NextResponse.json(
       { message: "Failed to fetch bookings" },
+      { status: 500 }
+    );
+  }
+}
+
+// Delete booking by ID — admin only
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id || session.user.role !== "admin") {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const idParam = url.searchParams.get("id");
+
+  if (!idParam) {
+    return NextResponse.json(
+      { message: "Missing booking ID" },
+      { status: 400 }
+    );
+  }
+
+  const bookingId = Number(idParam);
+
+  try {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+    });
+
+    if (!booking) {
+      return NextResponse.json(
+        { message: "Booking not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.booking.delete({
+      where: { id: bookingId },
+    });
+
+    return NextResponse.json({ message: "Booking deleted" }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting booking:", error);
+    return NextResponse.json(
+      { message: "Failed to delete booking" },
       { status: 500 }
     );
   }

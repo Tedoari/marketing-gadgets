@@ -26,6 +26,7 @@ const calculateBlockedDates = (
       let time = start - 7 * 86400000;
       time <= end + 14 * 86400000;
       time += 86400000
+      
     ) {
       blocked.add(time);
     }
@@ -108,7 +109,7 @@ export default function ProductDateRangePicker({
         <div className="mt-2 text-red-600 font-semibold">{message}</div>
       )}
       <button
-        className="w-[320px] bg-black text-white py-2 mt-4 rounded-lg disabled:opacity-50"
+        className="w-[320px] bg-black text-white py-2 mt-4 rounded-lg disabled:opacity-50 hover:bg-gray-700 hover:cursor-pointer"
         disabled={!startDate || !endDate || message !== ""}
         onClick={handleReserve}
       >
