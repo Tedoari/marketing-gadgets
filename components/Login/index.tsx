@@ -1,6 +1,6 @@
 'use client'; // Mark as client to use useState
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import HouseBrand from "@/public/images/Logo_Vertical_Color_Logos.png";
 import { useRouter } from 'next/navigation'; 

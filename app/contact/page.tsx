@@ -2,8 +2,7 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface FormData {
   name: string;
@@ -12,7 +11,6 @@ interface FormData {
 }
 
 export default function Contact() {
-  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
