@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Session } from 'next-auth';
 import { User } from 'next-auth';
 
