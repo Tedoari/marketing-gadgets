@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 import { NavigationType } from './types';
 import Link from 'next/link';
 import Image from 'next/image';
-import logo from "@/public/images/Allgon_BLUE.png"
-import user_logo from "@/public/images/Middel 1.jpg"
+import logo from "@/public/images/Allgon_BLUE.png";
+import user_logo from "@/public/images/Middel 1.jpg";
 import { signOut, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 
@@ -17,7 +17,7 @@ const navigation: NavigationType[] = [
 ];
 
 const handleLogout = async () => {
-    console.log('logged out')
+    console.log('logged out');
     await signOut({ redirect: true, callbackUrl: '/' });
 };
 
@@ -58,7 +58,7 @@ const Header = () => {
                 </div>
             </nav>
         </header>
-    )
-}
+    );
+};
 
 export default Header;

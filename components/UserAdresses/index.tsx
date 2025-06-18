@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 
 type Address = {
   id: number
@@ -18,7 +18,7 @@ const companyAddress: Address = {
   zip: '2665 NS',
   city: 'Bleiswijk',
   country: 'Netherlands',
-}
+};
 
 const deliveryAddresses: Address[] = [
   {
@@ -37,7 +37,7 @@ const deliveryAddresses: Address[] = [
     city: 'Eindhoven',
     country: 'Netherlands',
   },
-]
+];
 
 const UserAdresses = () => {
   return (
@@ -71,7 +71,7 @@ const UserAdresses = () => {
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default UserAdresses
+export default UserAdresses;
