@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { productId: string } }
+  req: NextRequest,
+  context: { params: { productId: string } }
 ) {
-  const productId = parseInt(params.productId, 10);
+  const { productId } = context.params;
+  const parsedProductId = parseInt(productId, 10);
 
-  if (isNaN(productId)) {
+  if (isNaN(parsedProductId)) {
     return NextResponse.json(
       { message: "Incorrect productId" },
       { status: 400 }
@@ -15,11 +16,11 @@ export async function GET(
   }
 
   try {
-    console.log("getting bookings for productId:", productId);
+    console.log("getting bookings for productId:", parsedProductId);
 
     const bookings = await prisma.booking.findMany({
       where: {
-        productId: productId,
+        productId: parsedProductId,
       },
       select: {
         startDate: true,
@@ -29,7 +30,6 @@ export async function GET(
 
     console.log("Bookings:", bookings);
 
-    // Return the raw start and end dates
     return NextResponse.json(bookings);
   } catch (error) {
     console.error("Error fetching bookings:", error);
