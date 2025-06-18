@@ -2,12 +2,10 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 import { Camera, Box, Calendar, Mail } from "lucide-react";
 
 export default function Information() {
-  const router = useRouter();
 
   return (
     <>
@@ -27,22 +25,21 @@ export default function Information() {
             </p>
             <p>
               <strong>We cover the shipping costs to your address.</strong> You
-              are only responsible for paying the return shipping costs.
+              are only responsible for paying the return shipping costs. An invoice will be sent accordingly.
             </p>
             <p>
               Once you place an order, you’ll receive a confirmation email along
-              with tracking information. Orders are usually shipped within a
+              with information. Orders are usually shipped within a
               week before the reserved date.
             </p>
             <p>
               <strong>
                 You can track the status of your order anytime through your
-                account.
+                account up untill we send it.
               </strong>{" "}
               Once your order is shipped, you will receive a notification with
               tracking information. If there are any delays, you will be
-              notified, and the expected delivery date will be updated in your
-              account.
+              notified, and the expected delivery date will be updated through the delivery service.
             </p>
           </div>
         </section>
@@ -51,22 +48,26 @@ export default function Information() {
           <h2 className="text-2xl font-bold mb-3">Returning Items</h2>
           <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-2">
             <p>
-              Please return all borrowed items{" "}
-              <strong>as soon as possible after your event</strong>. Others may
-              want to use the same items, so quick returns help keep everything
+              Please make sure the gadgets are available {" "}
+              <strong>as soon as possible after your event</strong>. Since we will book the return date as 
+              close as possible to the end of the event. 
+            </p>
+
+            <p>
+              Others may want to use the same items, so quick returns help keep everything
               available for the next team.
             </p>
+
             <p>
-              All items are delivered in a sturdy, equipment-style box.{" "}
-              <strong>Please reuse this box</strong> to return the items — no
+              All items are delivered in a flight case.{" "}
+              <strong>Please return the gadgets in this flight case.</strong> — no
               need to repack or find new packaging.
             </p>
-            <p>
-              You can choose any shipping provider, but make sure the return is{" "}
-              <strong>trackable</strong>.
-            </p>
+           
             <p>
               <strong>Return Address:</strong>
+              <br />
+              Tele Radio B.V.
               <br />
               International Marketing Allgon
               <br />
