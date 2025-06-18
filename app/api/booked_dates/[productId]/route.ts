@@ -5,22 +5,19 @@ export async function GET(
   req: NextRequest,
   context: { params: { productId: string } }
 ) {
-  const { productId } = context.params;
-  const parsedProductId = parseInt(productId, 10);
+  const productId = parseInt(context.params.productId, 10);
 
-  if (isNaN(parsedProductId)) {
+  if (isNaN(productId)) {
     return NextResponse.json(
-      { message: "Incorrect productId" },
+      { message: "Invalid productId" },
       { status: 400 }
     );
   }
 
   try {
-    console.log("getting bookings for productId:", parsedProductId);
-
     const bookings = await prisma.booking.findMany({
       where: {
-        productId: parsedProductId,
+        productId,
       },
       select: {
         startDate: true,
@@ -28,13 +25,10 @@ export async function GET(
       },
     });
 
-    console.log("Bookings:", bookings);
-
     return NextResponse.json(bookings);
   } catch (error) {
-    console.error("Error fetching bookings:", error);
     return NextResponse.json(
-      { message: "Something went wrong", error: (error as Error).message },
+      { message: "Server error", error: (error as Error).message },
       { status: 500 }
     );
   }
