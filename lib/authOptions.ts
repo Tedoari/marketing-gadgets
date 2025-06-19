@@ -1,9 +1,14 @@
 // lib/authOptions.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma"; // Your Prisma client
-import type { User } from "@prisma/client";
+// import type { User } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
+
+import type { Prisma } from '@prisma/client';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export type User = Prisma.UserGetPayload<{}>;
 
 
 export const authOptions: NextAuthOptions = {
