@@ -1,21 +1,9 @@
 // lib/authOptions.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma"; // Your Prisma client
-// import type { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
-
-export type User = {
-  id: number;
-  email: string;
-  password: string;
-  name: string;
-  role: 'user' | 'admin';
-  image?: string | null;
-  companyName?: string | null;
-  addressId?: number | null;
-};
-
 
 
 export const authOptions: NextAuthOptions = {
