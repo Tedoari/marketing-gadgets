@@ -3,9 +3,13 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { productId: string } }
+  // context: { params: { productId: string } }
 ) {
-  const productId = parseInt(context.params.productId, 10);
+  const url = new URL(req.url);
+  const segments = url.pathname.split("/");
+  const productIdStr = segments[segments.length - 1];
+
+  const productId = parseInt(productIdStr, 10);
 
   if (isNaN(productId)) {
     return NextResponse.json(
@@ -16,19 +20,14 @@ export async function GET(
 
   try {
     const bookings = await prisma.booking.findMany({
-      where: {
-        productId,
-      },
-      select: {
-        startDate: true,
-        endDate: true,
-      },
+      where: { productId },
+      select: { startDate: true, endDate: true },
     });
 
     return NextResponse.json(bookings);
   } catch (error) {
     return NextResponse.json(
-      { message: "Server error", error: (error as Error).message },
+      { message: "Error fetching bookings", error: (error as Error).message },
       { status: 500 }
     );
   }

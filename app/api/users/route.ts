@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 // POST - Create User
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { name, email, password, role, image, companyName, addressId } =
     await req.json();
 
@@ -60,11 +61,13 @@ export async function GET() {
 }
 
 // PUT - Update User by ID
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function PUT(req: NextRequest, context: any) {
+  const { id } = await context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
+  }
+
   const { name, email, password, role, image, companyName, addressId } =
     await req.json();
 
@@ -89,11 +92,12 @@ export async function PUT(
 }
 
 // DELETE - Delete User by ID
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function DELETE(req: NextRequest, context: any) {
+  const { id } = await context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
+  }
 
   try {
     const deletedUser = await prisma.user.delete({

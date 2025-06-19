@@ -23,7 +23,7 @@ export default function AdminUsers() {
     role: "user",
     image: "",
     companyName: "",
-    addressId: undefined,
+    addressId: 0,
   });
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
@@ -68,6 +68,8 @@ export default function AdminUsers() {
           name: "",
           role: "user",
           image: "",
+          companyName: "",
+          addressId: 0,
         });
         setEditingUser(null);
       } else {
@@ -168,7 +170,7 @@ export default function AdminUsers() {
           onChange={(e) =>
             setNewUser({
               ...newUser,
-              addressId: parseInt(e.target.value) || undefined,
+              addressId: parseInt(e.target.value) || 0,
             })
           }
           placeholder="Address ID"

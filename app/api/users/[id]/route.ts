@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
 // POST - Create User
@@ -26,11 +27,12 @@ export async function POST(req: Request) {
 }
 
 // GET - Fetch user by ID, including companyName and related address object
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function GET(req: NextRequest, context: any) {
+  const { id } = await context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "User ID missing" }, { status: 400 });
+  }
 
   try {
     const user = await prisma.user.findUnique({
@@ -66,12 +68,13 @@ export async function GET(
   }
 }
 
-// PUT - Update User by ID
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function PUT(req: NextRequest, context: any) {
+  const { id } = await context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "User ID missing" }, { status: 400 });
+  }
+
   const { name, email, password, role, image, companyName, addressId } =
     await req.json();
 
@@ -88,6 +91,7 @@ export async function PUT(
         addressId,
       },
     });
+
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error(error);
@@ -96,16 +100,18 @@ export async function PUT(
 }
 
 // DELETE - Delete User by ID
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function DELETE(req: NextRequest, context: any) {
+  const { id } = await context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "User ID missing" }, { status: 400 });
+  }
 
   try {
     const deletedUser = await prisma.user.delete({
       where: { id: Number(id) },
     });
+
     return NextResponse.json(deletedUser);
   } catch (error) {
     console.error(error);
