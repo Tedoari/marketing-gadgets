@@ -1,7 +1,7 @@
 // lib/authOptions.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma"; // Your Prisma client
-import { user } from "@prisma/client";
+import { User } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user: user | null = await prisma.user.findUnique({
+        const user: User | null = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
