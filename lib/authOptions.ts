@@ -5,10 +5,6 @@ import type { User } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
-import * as Prisma from "@prisma/client";
-
-console.log(Prisma);
-
 
 export const authOptions: NextAuthOptions = {
   providers: [
