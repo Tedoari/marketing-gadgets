@@ -5,10 +5,17 @@ import prisma from "@/lib/prisma"; // Your Prisma client
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
-import type { Prisma } from '@prisma/client';
+export type User = {
+  id: number;
+  email: string;
+  password: string;
+  name: string;
+  role: 'user' | 'admin';
+  image?: string | null;
+  companyName?: string | null;
+  addressId?: number | null;
+};
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type User = Prisma.UserGetPayload<{}>;
 
 
 export const authOptions: NextAuthOptions = {
