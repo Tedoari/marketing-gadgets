@@ -26,10 +26,10 @@ model address {
   city       String  @db.VarChar(255)
   postalCode String  @db.VarChar(50)
   country    String  @db.VarChar(100)
-  users      user[]
+  users      User[]
 }
 
-model user {
+model User {
   id           Int       @id @default(autoincrement())
   email        String    @unique(map: "email_UNIQUE") @db.VarChar(45)
   password     String    @db.VarChar(45)
@@ -58,7 +58,7 @@ model booking {
   startDate   DateTime
   endDate     DateTime
   userId      Int
-  user        user        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
   address     String      @db.VarChar(255) // snapshot of address for booking
   orderStatus OrderStatus @default(pending)
 }
