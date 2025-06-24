@@ -1,9 +1,10 @@
 // lib/authOptions.ts
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "@/lib/prisma"; // Your Prisma client
+import prisma from "@/lib/prisma"; 
 import type { User } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
+import AzureADProvider from "next-auth/providers/azure-ad";
 
 
 export const authOptions: NextAuthOptions = {
@@ -35,6 +36,17 @@ export const authOptions: NextAuthOptions = {
         return null;
       },
     }),
+    
+    AzureADProvider({
+      clientId: process.env.AZURE_AD_CLIENT_ID as string,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET as string,
+      tenantId: process.env.AZURE_AD_TENANT_ID as string,
+      
+      authorization: {
+        params: { scope: 'openid email profile User.Read  offline_access' },
+      },
+
+    }),
   ],
   session: {
     strategy: "jwt",
@@ -59,6 +71,8 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name;
         session.user.role = token.role;
         session.user.image = token.image;
+        console.log(token);
+        
       }
       return session;
     },

@@ -45,7 +45,7 @@ const LoginPage = () => {
         email,
         password,
       });
-
+      //const response = await signIn('azure-ad', { callbackUrl: 'http://localhost:3000/products' });
       
       console.log('SignIn response:', response);
       if (response?.error) {
