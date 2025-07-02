@@ -55,13 +55,31 @@ export const authOptions: NextAuthOptions = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
-        token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = user.role;
-        token.image = user.image;
+        token.id = user.id ?? token.id;
+        token.image = user.image ?? null;
       }
+
+      if (token.email) {
+        // Fetch role from DB by email every time JWT callback runs
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { role: true, id: true, name: true, image: true },
+        });
+
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.id = dbUser.id.toString();
+          token.name = dbUser.name;
+          token.image = dbUser.image;
+        } else {
+          token.role = null; // or 'user' as default role
+        }
+      }
+
       return token;
+
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: { session: any; token: JWT }) {
