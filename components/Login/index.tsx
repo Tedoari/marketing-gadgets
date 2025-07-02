@@ -9,8 +9,8 @@ import { signIn } from 'next-auth/react'; // Use NextAuth's signIn method for lo
 const LoginPage = () => {
   const router = useRouter();
 
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  // const [email, setEmail] = useState<string>('');
+  // const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>(''); 
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setLoading] = useState<boolean>(false); 
@@ -32,11 +32,11 @@ const LoginPage = () => {
     setSuccessMessage(''); 
 
     // Validate inputs
-    if (!email || !password) {
-      setErrorMessage('Both email and password are required');
-      setLoading(false);
-      return;
-    }
+    // if (!email || !password) {
+    //   setErrorMessage('Both email and password are required');
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       // Make api request using NextAuth's signIn function
@@ -45,7 +45,7 @@ const LoginPage = () => {
       //   email,
       //   password,
       // });
-      const response = await signIn('azure-ad', { callbackUrl: 'http://localhost:3000/products' });
+      const response = await signIn('azure-ad', { callbackUrl: 'http://gadgets.allgon.com:3000/products' });
       
       console.log('SignIn response:', response);
       if (response?.error) {
@@ -86,7 +86,7 @@ const LoginPage = () => {
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             
             {/* Email Input */}
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <label htmlFor="email" className="text-left text-lg font-semibold mb-2">
                 Email
               </label>
@@ -98,10 +98,10 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)} // Sets the email input
               />
-            </div>
+            </div> */}
 
             {/* Password Input */}
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <label htmlFor="password" className="text-left text-lg font-semibold mb-2">
                 Password
               </label>
@@ -113,7 +113,7 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)} // Password input which should eventually be hashed
               />
-            </div>
+            </div> */}
 
             {/* Error Message */}
             {errorMessage && (
