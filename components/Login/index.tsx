@@ -40,12 +40,12 @@ const LoginPage = () => {
 
     try {
       // Make api request using NextAuth's signIn function
-      const response = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-      });
-      //const response = await signIn('azure-ad', { callbackUrl: 'http://localhost:3000/products' });
+      // const response = await signIn('credentials', {
+      //   redirect: false,
+      //   email,
+      //   password,
+      // });
+      const response = await signIn('azure-ad', { callbackUrl: 'http://localhost:3000/products' });
       
       console.log('SignIn response:', response);
       if (response?.error) {
