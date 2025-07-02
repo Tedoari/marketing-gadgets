@@ -127,19 +127,12 @@ const LoginPage = () => {
 
             {/* Login Button */}
             <button
-              type="button"
+              type="submit"
               className="p-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition duration-300"
-              disabled={isLoading}
-              onClick={() => {
-                setLoading(true);
-                setErrorMessage('');
-                setSuccessMessage('');
-                signIn('azure-ad', { callbackUrl: 'https://gadgets.allgon.com:3000/products' });
-              }}
+              disabled={isLoading} // Disable button while loading so you can't send multiple requests
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
-
           </form>
         </div>
       </div>
