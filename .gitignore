@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 public/images/robot_dog/Robot_dog_video.mp4
+public/images/rover/Rover_video.mp4
+public/images/claw_machine/Clawmachine-video.mp4
+public/images/claw_machine/Clawmachine-video-2.mp4
