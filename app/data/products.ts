@@ -13,8 +13,8 @@ export const products: Product[] = [
     id: 1,
     title: "Robot Dog",
     images: [
-      "/images/robot_dog/wide_focus_shot.jpg",
       "/images/robot_dog/Robot_dog_1.jpg",
+      "/images/robot_dog/wide_focus_shot.jpg",
       "/images/robot_dog/Robot_dog_2.jpg",
       "/images/robot_dog/Robot_dog_3.jpg",
       "/images/robot_dog/Robot_dog_video.mp4",
