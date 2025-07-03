@@ -1,7 +1,7 @@
 // lib/authOptions.ts
-import CredentialsProvider from "next-auth/providers/credentials";
+//import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma"; 
-import type { User } from "@prisma/client";
+//import type { User } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import AzureADProvider from "next-auth/providers/azure-ad";
@@ -9,33 +9,33 @@ import AzureADProvider from "next-auth/providers/azure-ad";
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+    // CredentialsProvider({
+    //   name: "Credentials",
+    //   credentials: {
+    //     email: { label: "Email", type: "email" },
+    //     password: { label: "Password", type: "password" },
+    //   },
+    //   async authorize(credentials) {
+    //     if (!credentials?.email || !credentials?.password) {
+    //       return null;
+    //     }
 
-        const user: User | null = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+    //     const user: User | null = await prisma.user.findUnique({
+    //       where: { email: credentials.email },
+    //     });
 
-        if (user && user.password === credentials.password) {
-          return {
-            id: user.id.toString(),
-            email: user.email,
-            name: user.name,
-            role: user.role,
-            image: user.image,
-          };
-        }
-        return null;
-      },
-    }),
+    //     if (user && user.password === credentials.password) {
+    //       return {
+    //         id: user.id.toString(),
+    //         email: user.email,
+    //         name: user.name,
+    //         role: user.role,
+    //         image: user.image,
+    //       };
+    //     }
+    //     return null;
+    //   },
+    // }),
     
     AzureADProvider({
       clientId: process.env.AZURE_AD_CLIENT_ID as string,

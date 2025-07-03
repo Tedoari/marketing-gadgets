@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 // POST - Create User
 export async function POST(req: NextRequest) {
-  const { name, email, password, role, image, companyName, addressId } =
+  const { name, email, role, image, companyName, addressId } =
     await req.json();
 
   try {
@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         email,
-        password,
         role,
         image,
         companyName,
@@ -68,7 +67,7 @@ export async function PUT(req: NextRequest, context: any) {
     return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
   }
 
-  const { name, email, password, role, image, companyName, addressId } =
+  const { name, email, role, image, companyName, addressId } =
     await req.json();
 
   try {
@@ -77,7 +76,6 @@ export async function PUT(req: NextRequest, context: any) {
       data: {
         name,
         email,
-        password,
         role,
         image,
         companyName,
