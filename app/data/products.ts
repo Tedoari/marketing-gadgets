@@ -61,7 +61,7 @@ export const products: Product[] = [
       "/images/exter_game/Exster_game_5.jpg",
       "/images/exter_game/Screenshot_59.png",
       "/images/exter_game/Screenshot_60.png",
-      "/images/exter_game/Screenshot_61.png",
+      "/images/exter_game/Screenshot_55.png",
     ],
     categories: ["Games"],
     description: "",
