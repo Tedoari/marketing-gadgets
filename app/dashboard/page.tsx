@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 import AdminDashboard from "@/components/AdminDashboard";
 import AdminOrders from "@/components/AdminOrders";
 import AdminUsers from "@/components/AdminUsers";
-import AdminProducts from "@/components/AdminProducts";
 import AdminCalendar from "@/components/AdminCalendar";
 import { Activity, Package, User, LogOut } from "lucide-react";
 
@@ -41,8 +40,6 @@ export default function Home() {
         return <AdminOrders />;
       case "Users":
         return <AdminUsers />;
-      case "Products":
-        return <AdminProducts />;
       default:
         return <AdminDashboard />;
     }
@@ -72,12 +69,6 @@ export default function Home() {
               label="Users"
               active={activeTab === "Users"}
               onClick={() => setActiveTab("Users")}
-            />
-            <SideMenuItem
-              icon={<User />}
-              label="Products"
-              active={activeTab === "Products"}
-              onClick={() => setActiveTab("Products")}
             />
             <SideMenuItem
               icon={<LogOut />}

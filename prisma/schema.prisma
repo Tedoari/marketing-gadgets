@@ -32,7 +32,6 @@ model address {
 model User {
   id           Int       @id @default(autoincrement())
   email        String    @unique(map: "email_UNIQUE") @db.VarChar(45)
-  password     String    @db.VarChar(45)
   name         String    @db.VarChar(100)
   role         role      @default(user)
   image        String?   @db.VarChar(255)

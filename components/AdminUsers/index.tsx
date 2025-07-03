@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 interface User {
   id: number;
   email: string;
-  password: string;
   name: string;
   role: "user" | "admin";
   image: string;
@@ -18,7 +17,6 @@ export default function AdminUsers() {
   const [newUser, setNewUser] = useState<User>({
     id: 0,
     email: "",
-    password: "",
     name: "",
     role: "user",
     image: "",
@@ -64,7 +62,6 @@ export default function AdminUsers() {
         setNewUser({
           id: 0,
           email: "",
-          password: "",
           name: "",
           role: "user",
           image: "",
@@ -124,14 +121,6 @@ export default function AdminUsers() {
           value={newUser.email}
           onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
           placeholder="Email"
-          className="border border-gray-300 px-4 py-2 mb-3 rounded-md focus:ring-2 focus:ring-indigo-500"
-        />
-
-        <input
-          type="password"
-          value={newUser.password}
-          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-          placeholder="Password"
           className="border border-gray-300 px-4 py-2 mb-3 rounded-md focus:ring-2 focus:ring-indigo-500"
         />
 
