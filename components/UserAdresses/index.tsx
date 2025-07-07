@@ -1,77 +1,71 @@
 'use client';
 
-import React from 'react';
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 type Address = {
-  id: number
-  name: string
-  street: string
-  zip: string
-  city: string
-  country: string
-}
-
-const companyAddress: Address = {
-  id: 1,
-  name: 'Tele Radio Benelux',
-  street: 'Jadestraat 9',
-  zip: '2665 NS',
-  city: 'Bleiswijk',
-  country: 'Netherlands',
+  id: number;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
 };
 
-const deliveryAddresses: Address[] = [
-  {
-    id: 2,
-    name: 'Warehouse Rotterdam',
-    street: 'Havenstraat 45',
-    zip: '3011 AB',
-    city: 'Rotterdam',
-    country: 'Netherlands',
-  },
-  {
-    id: 3,
-    name: 'Service Center Eindhoven',
-    street: 'Industrieweg 77',
-    zip: '5612 AP',
-    city: 'Eindhoven',
-    country: 'Netherlands',
-  },
-];
+type UserData = {
+  companyName: string;
+  address: Address | null;
+};
 
-const UserAdresses = () => {
+export default function UserAddresses() {
+  const { data: session } = useSession();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [deliveryAddresses, setDeliveryAddresses] = useState<Address[]>([]);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`/api/user/${session.user.id}`)
+        .then(res => res.json())
+        .then(data => setUserData(data));
+    }
+
+    fetch("/api/delivery-addresses")
+      .then(res => res.json())
+      .then(data => setDeliveryAddresses(data));
+  }, [session?.user?.id]);
+
+  if (!session) return <p>Loading...</p>;
+
   return (
     <div className="space-y-8">
       {/* Company Address */}
-      <section>
-        <h2 className="text-2xl font-bold mb-2">Company Address</h2>
-        <div className="bg-white border border-gray-300 p-4 rounded-lg shadow-sm">
-          <p className="font-semibold">{companyAddress.name}</p>
-          <p>{companyAddress.street}</p>
-          <p>{companyAddress.zip} {companyAddress.city}</p>
-          <p>{companyAddress.country}</p>
-        </div>
-      </section>
+      {userData?.address && (
+        <section>
+          <h2 className="text-2xl font-bold mb-2">Company Address</h2>
+          <div className="bg-white border border-gray-300 p-4 rounded-lg shadow-sm">
+            <p className="font-semibold">{userData.companyName}</p>
+            <p>{userData.address.street}</p>
+            <p>{userData.address.postalCode} {userData.address.city}</p>
+            <p>{userData.address.country}</p>
+          </div>
+        </section>
+      )}
 
       {/* Delivery Addresses */}
       <section>
         <h2 className="text-2xl font-bold mb-2">Delivery Addresses</h2>
         <div className="space-y-4">
-          {deliveryAddresses.map((address) => (
+          {deliveryAddresses.map(addr => (
             <div
-              key={address.id}
+              key={addr.id}
               className="bg-white border border-gray-300 p-4 rounded-lg shadow-sm"
             >
-              <p className="font-semibold">{address.name}</p>
-              <p>{address.street}</p>
-              <p>{address.zip} {address.city}</p>
-              <p>{address.country}</p>
+              <p>{addr.street}</p>
+              <p>{addr.postalCode} {addr.city}</p>
+              <p>{addr.country}</p>
             </div>
           ))}
         </div>
       </section>
     </div>
   );
-};
-
-export default UserAdresses;
+}
