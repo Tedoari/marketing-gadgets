@@ -10,7 +10,12 @@ type Address = {
   country: string;
 };
 
-const UserAddresses = ({ userId }: { userId: number }) => {
+interface UserAddressesProps {
+  userId: number;
+  companyName: string;
+}
+
+const UserAddresses = ({ userId, companyName }: UserAddressesProps) => {
   const [address, setAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +44,7 @@ const UserAddresses = ({ userId }: { userId: number }) => {
       <section>
         <h2 className="text-2xl font-bold mb-2">Company Address</h2>
         <div className="bg-white border border-gray-300 p-4 rounded-lg shadow-sm">
+          <p className="font-bold">{companyName}</p> {/* Company Name in bold */}
           <p>{address.street}</p>
           <p>
             {address.postalCode} {address.city}

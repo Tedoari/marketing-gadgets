@@ -28,6 +28,8 @@ export default function Home() {
     }
 
     const userId = Number(session.user.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const companyName = (session.user as any).companyName || "Company";
 
     switch (activeTab) {
       case "Orders":
@@ -38,7 +40,7 @@ export default function Home() {
           </>
         );
       case "Addresses":
-        return <UserAdresses userId={userId} />;
+        return <UserAdresses userId={userId} companyName={companyName} />;
       case "Account Details":
         return <UserDetails />;
       default:
