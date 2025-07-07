@@ -1,26 +1,30 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@/lib/prisma"; // adjust this import to your prisma client
+// app/api/companyName/[id]/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const userId = Number(params.id);
 
-  if (!id || Array.isArray(id)) {
-    return res.status(400).json({ error: "Invalid user id" });
+  if (isNaN(userId)) {
+    return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
   }
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: Number(id) },
+      where: { id: userId },
       select: { companyName: true },
     });
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+    if (!user?.companyName) {
+      return NextResponse.json({ companyName: "" }, { status: 404 });
     }
 
-    return res.status(200).json({ companyName: user.companyName });
+    return NextResponse.json({ companyName: user.companyName });
   } catch (error) {
-    console.error("Failed to fetch company name:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("[COMPANY_NAME_API]", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
