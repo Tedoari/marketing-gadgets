@@ -4,7 +4,8 @@ import prisma from "@/lib/prisma";
 
 // POST - Create User
 export async function POST(req: Request) {
-  const { name, email, role, image, companyName, addressId } = await req.json();
+  const { name, email, role, image, companyName, addressId } =
+    await req.json();
 
   try {
     const newUser = await prisma.user.create({
@@ -24,9 +25,9 @@ export async function POST(req: Request) {
   }
 }
 
-// GET - Fetch user by ID, including companyName and related address object + duplicated deliveryAddress
+// GET - Fetch user by ID, including companyName and related address object
 export async function GET(req: NextRequest, context: any) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json({ error: "User ID missing" }, { status: 400 });
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest, context: any) {
         role: true,
         image: true,
         companyName: true,
+        addressId: true,
         address: {
           select: {
             id: true,
@@ -58,26 +60,22 @@ export async function GET(req: NextRequest, context: any) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Add deliveryAddress as a duplicate of the company address
-    return NextResponse.json({
-      ...user,
-      deliveryAddress: user.address,
-    });
+    return NextResponse.json(user);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Error fetching user" }, { status: 500 });
   }
 }
 
-// PUT - Update User by ID
 export async function PUT(req: NextRequest, context: any) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json({ error: "User ID missing" }, { status: 400 });
   }
 
-  const { name, email, role, image, companyName, addressId } = await req.json();
+  const { name, email, role, image, companyName, addressId } =
+    await req.json();
 
   try {
     const updatedUser = await prisma.user.update({
@@ -101,7 +99,7 @@ export async function PUT(req: NextRequest, context: any) {
 
 // DELETE - Delete User by ID
 export async function DELETE(req: NextRequest, context: any) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json({ error: "User ID missing" }, { status: 400 });
