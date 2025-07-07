@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import UserCurrentOrders from "@/components/UserCurrentOrders";
 import UserRecentOrders from "@/components/UserRecentOrders";
-import UserAdresses from "@/components/UserAdresses";
+import UserAddresses from "@/components/UserAdresses";
 import UserDetails from "@/components/UserDetails";
 import { Package, MapPin, User, LogOut } from "lucide-react";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Dashboard");
-
   const { data: session, status } = useSession();
 
+  const [companyName, setCompanyName] = useState("");
+
+useEffect(() => {
+  if (!session?.user?.id) return;
+
+  async function fetchCompanyName() {
+    try {
+      const res = await fetch(`/api/user/${session?.user.id}`);
+      if (!res.ok) throw new Error("Failed to fetch company name");
+      const data = await res.json();
+      setCompanyName(data.companyName || "");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  fetchCompanyName();
+}, [session?.user?.id]);
   const handleLogout = async () => {
     console.log("logged out");
     await signOut({ redirect: true, callbackUrl: "/" });
@@ -38,7 +54,7 @@ export default function Home() {
           </>
         );
       case "Addresses":
-        return <UserAdresses userId={userId} />;
+        return <UserAddresses userId={userId} companyName={companyName} />;
       case "Account Details":
         return <UserDetails />;
       default:
