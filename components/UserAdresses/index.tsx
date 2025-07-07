@@ -39,7 +39,7 @@ const UserAddresses = ({ userId }: UserAddressesProps) => {
   useEffect(() => {
     async function fetchCompanyName() {
       try {
-        const res = await fetch(`/api/user/${userId}`);
+        const res = await fetch(`/api/companyName/${userId}`); // ✅ updated path
         if (!res.ok) throw new Error("Failed to fetch company name");
         const data = await res.json();
         setCompanyName(data.companyName || "");
