@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import UserCurrentOrders from "@/components/UserCurrentOrders";
@@ -11,40 +11,43 @@ import UserDetails from "@/components/UserDetails";
 import { Package, MapPin, User, LogOut } from "lucide-react";
 
 export default function Home() {
-
   const [activeTab, setActiveTab] = useState("Dashboard");
 
-  // useEffect(() => {
-  //   const user = localStorage.getItem("user");
-  //   if (!user) {
-  //     // Redirect to login page if no user is found
-  //     router.push("/");
-  //   }
-  // }, [router]);
+  const { data: session, status } = useSession();
 
-const handleLogout = async () => {
-    console.log('logged out');
-    await signOut({ redirect: true, callbackUrl: '/' });
-};
+  const handleLogout = async () => {
+    console.log("logged out");
+    await signOut({ redirect: true, callbackUrl: "/" });
+  };
 
   const renderContent = () => {
+    if (status === "loading") return <p>Loading...</p>;
+
+    if (!session?.user?.id) {
+      return <p>Please login to see your data.</p>;
+    }
+
+    const userId = Number(session.user.id);
+
     switch (activeTab) {
       case "Orders":
         return (
-        <>
-          <UserCurrentOrders /> 
-          <UserRecentOrders />
-        </>
+          <>
+            <UserCurrentOrders />
+            <UserRecentOrders />
+          </>
         );
       case "Addresses":
-        return <UserAdresses />;
+        return <UserAdresses userId={userId} />;
       case "Account Details":
         return <UserDetails />;
       default:
-        return <>
-        <UserCurrentOrders /> 
-        <UserRecentOrders />
-      </>;
+        return (
+          <>
+            <UserCurrentOrders />
+            <UserRecentOrders />
+          </>
+        );
     }
   };
 
@@ -92,7 +95,12 @@ interface SideMenuItemProps {
   onClick?: () => void;
 }
 
-const SideMenuItem: React.FC<SideMenuItemProps> = ({ icon, label, active = false, onClick }: SideMenuItemProps) => {
+const SideMenuItem: React.FC<SideMenuItemProps> = ({
+  icon,
+  label,
+  active = false,
+  onClick,
+}: SideMenuItemProps) => {
   return (
     <button
       onClick={onClick}
