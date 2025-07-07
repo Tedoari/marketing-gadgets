@@ -7,35 +7,33 @@ export async function middleware(req: NextRequest) {
 
   console.log("Middleware triggered for:", pathname);
 
-  // Check if there is a session
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
   console.log("JWT token:", token);
 
-  if (pathname === "/" && token) {
-    console.log("User is logged in, redirecting to /products");
-    const redirectUrl = new URL("/products", req.url);
-    return NextResponse.redirect(redirectUrl);
+  // Allow unauthenticated access to the login page (/)
+  if (pathname === "/") {
+    if (token) {
+      console.log("User is logged in, redirecting to /products");
+      return NextResponse.redirect(new URL("/products", req.url));
+    } else {
+      console.log("User is not logged in, staying on /");
+      return NextResponse.next();
+    }
   }
 
-  if (pathname === "/" && !token) {
-    console.log("User is not logged in, allowing access to /");
-    return NextResponse.next();
-  }
-
+  // If there's no token at all, redirect to login
   if (!token) {
-    console.log("No token and redirecting to login page");
-    const loginUrl = new URL("/", req.url);
-    return NextResponse.redirect(loginUrl);
+    console.log("No token found. Redirecting to login.");
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
-  if (pathname === "/dashboard" && token.role !== "admin") {
-    console.log("User is not admin, redirecting to /");
-    const redirectUrl = new URL("/", req.url);
-    return NextResponse.redirect(redirectUrl);
+  // If token exists but role is invalid, redirect to /unauthorized
+  if (token.role !== "user" && token.role !== "admin") {
+    console.log("Token found but role is invalid. Redirecting to /unauthorized.");
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
 
-  console.log("There is a token and now going to the page");
+  console.log("Authorized access. Proceeding.");
   return NextResponse.next();
 }
 
@@ -48,6 +46,6 @@ export const config = {
     "/account",
     "/product",
     "/product/:id*",
-    "/dashboard", // This is the single dashboard path you want to protect
+    "/dashboard",
   ],
 };
