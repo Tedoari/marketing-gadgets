@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -14,23 +14,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const { data: session, status } = useSession();
 
-  const [companyName, setCompanyName] = useState("");
-
-useEffect(() => {
-  if (!session?.user?.id) return;
-
-  async function fetchCompanyName() {
-    try {
-      const res = await fetch(`/api/user/${session?.user.id}`);
-      if (!res.ok) throw new Error("Failed to fetch company name");
-      const data = await res.json();
-      setCompanyName(data.companyName || "");
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  fetchCompanyName();
-}, [session?.user?.id]);
   const handleLogout = async () => {
     console.log("logged out");
     await signOut({ redirect: true, callbackUrl: "/" });
@@ -54,7 +37,7 @@ useEffect(() => {
           </>
         );
       case "Addresses":
-        return <UserAddresses userId={userId} companyName={companyName} />;
+        return <UserAddresses userId={userId} />;
       case "Account Details":
         return <UserDetails />;
       default:
