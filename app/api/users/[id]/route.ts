@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   }
 }
 
-// GET - Fetch user by ID, including companyName and related address object
+// GET - Fetch user by ID, including companyName and related address object + duplicated deliveryAddress
 export async function GET(req: NextRequest, context: any) {
   const { id } = context.params;
 
@@ -58,13 +58,18 @@ export async function GET(req: NextRequest, context: any) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    // Add deliveryAddress as a duplicate of the company address
+    return NextResponse.json({
+      ...user,
+      deliveryAddress: user.address,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Error fetching user" }, { status: 500 });
   }
 }
 
+// PUT - Update User by ID
 export async function PUT(req: NextRequest, context: any) {
   const { id } = context.params;
 
