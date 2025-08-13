@@ -19,6 +19,7 @@ type User = {
   email: string;
   role?: string;
   image?: string;
+  companyName?: string;
   address?: Address;
 };
 
@@ -33,9 +34,13 @@ export default function Confirmation() {
     country: "",
   });
   const [error, setError] = useState<string | null>(null);
-  const [otherUserId, setOtherUserId] = useState<number | null>(null);
-  const router = useRouter();
 
+  // Admin-specific
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const router = useRouter();
   const searchParams = useSearchParams();
   const start = searchParams.get("start") || "";
   const end = searchParams.get("end") || "";
@@ -47,6 +52,7 @@ export default function Confirmation() {
 
   const isAdmin = session?.user?.role === "admin";
 
+  // Fetch current user
   useEffect(() => {
     if (status === "authenticated" && session?.user?.id) {
       fetch(`/api/users/${session.user.id}`)
@@ -58,6 +64,26 @@ export default function Confirmation() {
         .catch(() => setError("Failed to load user info"));
     }
   }, [status, session]);
+
+  // Fetch all users for admin
+  useEffect(() => {
+    if (isAdmin) {
+      fetch("/api/users")
+        .then((res) => res.json())
+        .then((data: User[]) => setAllUsers(data))
+        .catch(() => setError("Failed to load users list"));
+    }
+  }, [isAdmin]);
+
+  // When admin selects a user, set selectedUser
+  useEffect(() => {
+    if (selectedUserId) {
+      const u = allUsers.find((u) => u.id === selectedUserId) || null;
+      setSelectedUser(u);
+    } else {
+      setSelectedUser(null);
+    }
+  }, [selectedUserId, allUsers]);
 
   const isDifferentAddressIncomplete =
     !differentAddress.street.trim() ||
@@ -75,9 +101,19 @@ export default function Confirmation() {
   }
 
   async function handleConfirm(forcedUserId?: number) {
-    const addressString = useDifferentAddress
-      ? `${differentAddress.street}, ${differentAddress.postalCode} ${differentAddress.city}, ${differentAddress.country}`
-      : dbAddress;
+    let addressString = dbAddress;
+
+    // If admin booking for someone else
+    if (forcedUserId) {
+      addressString = selectedUser?.address
+        ? `${selectedUser.address.street}, ${selectedUser.address.postalCode} ${selectedUser.address.city}, ${selectedUser.address.country}`
+        : "No address on file";
+    }
+
+    // If overriding with "Different Address"
+    if (useDifferentAddress) {
+      addressString = `${differentAddress.street}, ${differentAddress.postalCode} ${differentAddress.city}, ${differentAddress.country}`;
+    }
 
     const bookingData = {
       productId: Number(productId),
@@ -88,7 +124,9 @@ export default function Confirmation() {
     };
 
     const formData = {
-      user: session?.user?.name || "No User Found",
+      user: forcedUserId
+        ? selectedUser?.name || "Unknown User"
+        : session?.user?.name || "No User Found",
       address: addressString,
       startDate: start.toString(),
       endDate: end.toString(),
@@ -97,9 +135,7 @@ export default function Confirmation() {
     try {
       const bookingRes = await fetch("/api/bookings", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),
       });
 
@@ -111,9 +147,7 @@ export default function Confirmation() {
         body: JSON.stringify(formData),
       });
 
-      if (!emailRes.ok) {
-        throw new Error("Failed to send confirmation email.");
-      }
+      if (!emailRes.ok) throw new Error("Failed to send confirmation email.");
 
       alert("Booking successfully saved!");
       router.push("/dashboard");
@@ -132,9 +166,9 @@ export default function Confirmation() {
 
       <main className="p-8 max-w-4xl mx-auto text-gray-800 space-y-8 flex-grow">
         <h1 className="text-3xl font-bold mb-6">Confirm Your Booking</h1>
-
         {error && <p className="text-red-600">{error}</p>}
 
+        {/* Normal Booking Section */}
         <section className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm space-y-4">
           <p>
             <span className="font-semibold">User:</span>{" "}
@@ -165,54 +199,23 @@ export default function Confirmation() {
 
             {useDifferentAddress && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Street"
-                  value={differentAddress.street}
-                  onChange={(e) =>
-                    setDifferentAddress({
-                      ...differentAddress,
-                      street: e.target.value,
-                    })
-                  }
-                  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={differentAddress.city}
-                  onChange={(e) =>
-                    setDifferentAddress({
-                      ...differentAddress,
-                      city: e.target.value,
-                    })
-                  }
-                  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Postal Code"
-                  value={differentAddress.postalCode}
-                  onChange={(e) =>
-                    setDifferentAddress({
-                      ...differentAddress,
-                      postalCode: e.target.value,
-                    })
-                  }
-                  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Country"
-                  value={differentAddress.country}
-                  onChange={(e) =>
-                    setDifferentAddress({
-                      ...differentAddress,
-                      country: e.target.value,
-                    })
-                  }
-                  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                {["Street", "City", "Postal Code", "Country"].map((field) => (
+                  <input
+                    key={field}
+                    type="text"
+                    placeholder={field}
+                    value={differentAddress[
+                      field.toLowerCase().replace(" ", "") as keyof Address
+                    ]}
+                    onChange={(e) =>
+                      setDifferentAddress({
+                        ...differentAddress,
+                        [field.toLowerCase().replace(" ", "")]: e.target.value,
+                      })
+                    }
+                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -227,7 +230,7 @@ export default function Confirmation() {
             </p>
           </div>
 
-          {/* PDF link */}
+          {/* PDF Link */}
           <p className="text-sm text-gray-600">
             By confirming, you agree to our{" "}
             <a
@@ -241,7 +244,6 @@ export default function Confirmation() {
             .
           </p>
 
-          {/* Normal booking button */}
           <button
             onClick={() => handleConfirm()}
             disabled={isConfirmDisabled}
@@ -251,7 +253,7 @@ export default function Confirmation() {
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               }
-              `}
+            `}
           >
             Confirm Booking
           </button>
@@ -265,21 +267,37 @@ export default function Confirmation() {
               Book on behalf of another user.
             </p>
 
-            <input
-              type="number"
-              placeholder="User ID"
-              value={otherUserId ?? ""}
-              onChange={(e) => setOtherUserId(Number(e.target.value))}
-              className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            />
+            <select
+              value={selectedUserId ?? ""}
+              onChange={(e) => setSelectedUserId(Number(e.target.value))}
+              className="border border-gray-300 rounded-md p-2 w-full"
+            >
+              <option value="">-- Select User --</option>
+              {allUsers.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name} ({u.email})
+                </option>
+              ))}
+            </select>
+
+            {selectedUser && (
+              <div className="bg-white border border-gray-200 rounded-md p-4">
+                <p className="font-semibold">Selected User Address:</p>
+                <p>
+                  {selectedUser.address
+                    ? `${selectedUser.address.street}, ${selectedUser.address.postalCode} ${selectedUser.address.city}, ${selectedUser.address.country}`
+                    : "No address on file"}
+                </p>
+              </div>
+            )}
 
             <button
               onClick={() => {
-                if (!otherUserId) {
-                  alert("Please enter a user ID.");
+                if (!selectedUserId) {
+                  alert("Please select a user.");
                   return;
                 }
-                handleConfirm(otherUserId);
+                handleConfirm(selectedUserId);
               }}
               className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md"
             >
