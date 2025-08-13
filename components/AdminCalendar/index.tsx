@@ -25,7 +25,6 @@ export default function Calendar() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [productColors, setProductColors] = useState<Record<number, string>>({});
 
-  // Fetch bookings
   useEffect(() => {
     async function fetchBookings() {
       try {
@@ -34,7 +33,6 @@ export default function Calendar() {
         if (res.ok && data.bookings) {
           setBookings(data.bookings);
 
-          // Assign colors per product
           const colorMap: Record<number, string> = {};
           data.bookings.forEach((b: Booking, index: number) => {
             if (!colorMap[b.product.id]) {
@@ -51,13 +49,12 @@ export default function Calendar() {
     fetchBookings();
   }, []);
 
-  // Generate all days to show
   const generateCalendar = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
-    const startDay = firstDayOfMonth.getDay(); // Sunday=0
+    const startDay = firstDayOfMonth.getDay();
     const daysInMonth = lastDayOfMonth.getDate();
 
     const calendarDays: (Date | null)[] = [
@@ -69,11 +66,8 @@ export default function Calendar() {
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const calendarDays = generateCalendar();
-
-  // Helper: format date to YYYY-MM-DD
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
-  // Build booked dates map
   const bookedDates: Record<string, Booking[]> = {};
   bookings.forEach((b) => {
     const start = new Date(b.startDate);
@@ -144,7 +138,7 @@ export default function Calendar() {
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="bg-gray-100 text-center font-medium py-2 border-b border-r last:border-r-0"
+            className="bg-gray-100 text-center font-medium py-2 border border-gray-200"
           >
             {day}
           </div>
