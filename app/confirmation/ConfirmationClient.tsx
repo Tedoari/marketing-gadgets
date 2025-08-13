@@ -33,6 +33,7 @@ export default function Confirmation() {
     country: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [otherUserId, setOtherUserId] = useState<number | null>(null);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -43,6 +44,8 @@ export default function Confirmation() {
   const dbAddress = user?.address
     ? `${user.address.street}, ${user.address.postalCode} ${user.address.city}, ${user.address.country}`
     : "No address on file";
+
+  const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.id) {
@@ -68,10 +71,10 @@ export default function Confirmation() {
   function formatDate(dateString: string) {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB"); // format as dd/mm/yyyy
+    return date.toLocaleDateString("en-GB");
   }
 
-  async function handleConfirm() {
+  async function handleConfirm(forcedUserId?: number) {
     const addressString = useDifferentAddress
       ? `${differentAddress.street}, ${differentAddress.postalCode} ${differentAddress.city}, ${differentAddress.country}`
       : dbAddress;
@@ -81,7 +84,7 @@ export default function Confirmation() {
       startDate: new Date(start),
       endDate: new Date(end),
       address: addressString,
-      userId: session?.user?.id,
+      userId: forcedUserId || session?.user?.id,
     };
 
     const formData = {
@@ -224,8 +227,23 @@ export default function Confirmation() {
             </p>
           </div>
 
+          {/* PDF link */}
+          <p className="text-sm text-gray-600">
+            By confirming, you agree to our{" "}
+            <a
+              href="/terms.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Terms & Conditions
+            </a>
+            .
+          </p>
+
+          {/* Normal booking button */}
           <button
-            onClick={handleConfirm}
+            onClick={() => handleConfirm()}
             disabled={isConfirmDisabled}
             className={`mt-6 w-full py-3 text-white font-semibold rounded-md
               ${
@@ -238,6 +256,37 @@ export default function Confirmation() {
             Confirm Booking
           </button>
         </section>
+
+        {/* Admin Force Booking */}
+        {isAdmin && (
+          <section className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 shadow-sm space-y-4">
+            <h2 className="text-xl font-semibold">Admin Force Booking</h2>
+            <p className="text-sm text-gray-600">
+              Book on behalf of another user.
+            </p>
+
+            <input
+              type="number"
+              placeholder="User ID"
+              value={otherUserId ?? ""}
+              onChange={(e) => setOtherUserId(Number(e.target.value))}
+              className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            />
+
+            <button
+              onClick={() => {
+                if (!otherUserId) {
+                  alert("Please enter a user ID.");
+                  return;
+                }
+                handleConfirm(otherUserId);
+              }}
+              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md"
+            >
+              Force Book
+            </button>
+          </section>
+        )}
       </main>
 
       <Footer />
