@@ -6,10 +6,10 @@ import { Trash2 } from "lucide-react";
 type Order = {
   id: number;
   item: string;
-  eventName?: string | null;
   address: string;
   companyName: string;
   userName: string;
+  eventName?: string;
   status: string;
   startDate: string;
   endDate: string;
@@ -54,10 +54,10 @@ const AdminOrders = () => {
             return {
               id: booking.id,
               item: booking.product?.name || "Unknown Product",
-              eventName: booking.eventName || null,
               address: booking.address,
               companyName: booking.user?.companyName || "Unknown Company",
               userName: booking.user?.name || "Unknown User",
+              eventName: booking.eventName || "",
               status,
               startDate: start.toLocaleDateString("nl-NL"),
               endDate: end.toLocaleDateString("nl-NL"),
@@ -79,10 +79,7 @@ const AdminOrders = () => {
   }, []);
 
   const handleDelete = async (orderId: number) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to cancel this order?"
-    );
-    if (!confirmDelete) return;
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
 
     try {
       const res = await fetch(`/api/bookings?id=${orderId}`, {
@@ -114,12 +111,11 @@ const AdminOrders = () => {
             <div>
               <p className="font-medium">Order #{order.id}</p>
               <p>
-                {order.item}
-                {order.eventName ? ` — ${order.eventName}` : ""} towards{" "}
-                {order.address}
+                {order.item} towards {order.address}
               </p>
               <p className="text-sm text-gray-600">
                 {order.companyName} — {order.userName}
+                {order.eventName ? ` — ${order.eventName}` : ""}
               </p>
             </div>
             <div className="text-right flex flex-col items-end gap-1">
