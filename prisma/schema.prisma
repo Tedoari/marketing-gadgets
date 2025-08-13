@@ -59,5 +59,6 @@ model booking {
   userId      Int
   user        User        @relation(fields: [userId], references: [id])
   address     String      @db.VarChar(255) // snapshot of address for booking
+  eventName   String?     @db.VarChar(35)
   orderStatus OrderStatus @default(pending)
 }

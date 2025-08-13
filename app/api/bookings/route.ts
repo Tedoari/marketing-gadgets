@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { productId, startDate, endDate, userId, address } = body;
+    const { productId, startDate, endDate, userId, address, eventName } = body;
 
     if (!productId || !startDate || !endDate || !userId || !address) {
       return NextResponse.json(
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
         endDate: new Date(endDate),
         userId: Number(userId),
         address,
+        eventName: eventName?.trim() || null, // Save event if provided
       },
     });
 

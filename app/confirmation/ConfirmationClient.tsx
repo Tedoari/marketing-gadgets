@@ -33,6 +33,7 @@ export default function Confirmation() {
     postalCode: "",
     country: "",
   });
+  const [eventName, setEventName] = useState(""); // <-- new state
   const [error, setError] = useState<string | null>(null);
 
   // Admin-specific
@@ -92,7 +93,7 @@ export default function Confirmation() {
     !differentAddress.country.trim();
 
   const isConfirmDisabled =
-    !start || !end || (useDifferentAddress && isDifferentAddressIncomplete);
+    !start || !end || !eventName.trim() || (useDifferentAddress && isDifferentAddressIncomplete);
 
   function formatDate(dateString: string) {
     if (!dateString) return "";
@@ -120,6 +121,7 @@ export default function Confirmation() {
       startDate: new Date(start),
       endDate: new Date(end),
       address: addressString,
+      eventName: eventName.trim(), // <-- new
       userId: forcedUserId || session?.user?.id,
     };
 
@@ -130,6 +132,7 @@ export default function Confirmation() {
       address: addressString,
       startDate: start.toString(),
       endDate: end.toString(),
+      eventName: eventName.trim(), // <-- new
     };
 
     try {
@@ -230,6 +233,18 @@ export default function Confirmation() {
             </p>
           </div>
 
+          {/* Event Name Input */}
+          <div className="mt-4">
+            <label className="block font-semibold mb-2">What event?</label>
+            <input
+              type="text"
+              maxLength={35}
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           {/* PDF Link */}
           <p className="text-sm text-gray-600">
             By confirming, you agree to our{" "}
@@ -291,6 +306,18 @@ export default function Confirmation() {
               </div>
             )}
 
+            {/* Event Name Input for Admin */}
+            <div>
+              <label className="block font-semibold mb-2">What event?</label>
+              <input
+                type="text"
+                maxLength={35}
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
             <button
               onClick={() => {
                 if (!selectedUserId) {
@@ -299,7 +326,12 @@ export default function Confirmation() {
                 }
                 handleConfirm(selectedUserId);
               }}
-              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md"
+              disabled={!eventName.trim()}
+              className={`w-full py-3 text-white font-semibold rounded-md ${
+                !eventName.trim()
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-red-600 hover:bg-red-700"
+              }`}
             >
               Force Book
             </button>
