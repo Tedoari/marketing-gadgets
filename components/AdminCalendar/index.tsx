@@ -7,7 +7,7 @@ interface Booking {
   startDate: string;
   endDate: string;
   address: string;
-  event?: string; // NEW
+  eventName?: string; // changed from event → eventName
   user: { name: string; companyName?: string };
   product: { id: number; name: string };
 }
@@ -179,7 +179,7 @@ export default function Calendar() {
                     <strong>User:</strong> {b.user.name}{' '}
                     {b.user.companyName && `(${b.user.companyName})`}
                   </p>
-                  {b.event && <p><strong>Event:</strong> {b.event}</p>}
+                  {b.eventName && <p><strong>Event:</strong> {b.eventName}</p>}
                   <p><strong>Address:</strong> {b.address}</p>
                   <p><strong>From:</strong> {new Date(b.startDate).toLocaleDateString()}</p>
                   <p><strong>To:</strong> {new Date(b.endDate).toLocaleDateString()}</p>
