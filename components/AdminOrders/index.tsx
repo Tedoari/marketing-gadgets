@@ -7,6 +7,8 @@ type Order = {
   id: number;
   item: string;
   address: string;
+  companyName: string;
+  userName: string;
   status: string;
   startDate: string;
   endDate: string;
@@ -52,6 +54,8 @@ const AdminOrders = () => {
               id: booking.id,
               item: booking.product?.name || "Unknown Product",
               address: booking.address,
+              companyName: booking.user?.companyName || "Unknown Company",
+              userName: booking.user?.name || "Unknown User",
               status,
               startDate: start.toLocaleDateString("nl-NL"),
               endDate: end.toLocaleDateString("nl-NL"),
@@ -85,7 +89,6 @@ const AdminOrders = () => {
 
       if (!res.ok) throw new Error("Failed to delete");
 
-      // Remove from state
       setActive((prev) => prev.filter((o) => o.id !== orderId));
       setUpcoming((prev) => prev.filter((o) => o.id !== orderId));
       setCompleted((prev) => prev.filter((o) => o.id !== orderId));
@@ -110,6 +113,9 @@ const AdminOrders = () => {
               <p className="font-medium">Order #{order.id}</p>
               <p>
                 {order.item} towards {order.address}
+              </p>
+              <p className="text-sm text-gray-600">
+                {order.companyName} — {order.userName}
               </p>
             </div>
             <div className="text-right flex flex-col items-end gap-1">

@@ -52,7 +52,10 @@ export async function GET() {
   try {
     const bookings = await prisma.booking.findMany({
       where: isAdmin ? undefined : { userId: Number(session.user.id) },
-      include: { product: true },
+      include: {
+        product: true,
+        user: true, // includes companyName, name, email, etc.
+      },
       orderBy: { startDate: "desc" },
     });
 
