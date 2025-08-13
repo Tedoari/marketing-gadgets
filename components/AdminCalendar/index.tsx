@@ -6,10 +6,11 @@ interface Booking {
   id: number;
   startDate: string;
   endDate: string;
+  address: string;
+  user: { name: string; companyName?: string };
   product: { id: number; name: string };
 }
 
-// Moved outside the component so it's not a dependency
 const colorPalette = [
   'bg-red-300',
   'bg-blue-300',
@@ -24,6 +25,7 @@ export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [productColors, setProductColors] = useState<Record<number, string>>({});
+  const [selectedDay, setSelectedDay] = useState<{ date: string; bookings: Booking[] } | null>(null);
 
   useEffect(() => {
     async function fetchBookings() {
@@ -36,8 +38,7 @@ export default function Calendar() {
           const colorMap: Record<number, string> = {};
           data.bookings.forEach((b: Booking, index: number) => {
             if (!colorMap[b.product.id]) {
-              colorMap[b.product.id] =
-                colorPalette[index % colorPalette.length];
+              colorMap[b.product.id] = colorPalette[index % colorPalette.length];
             }
           });
           setProductColors(colorMap);
@@ -57,11 +58,10 @@ export default function Calendar() {
     const startDay = firstDayOfMonth.getDay();
     const daysInMonth = lastDayOfMonth.getDate();
 
-    const calendarDays: (Date | null)[] = [
+    return [
       ...Array.from({ length: startDay }, () => null),
       ...Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1)),
     ];
-    return calendarDays;
   };
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -72,11 +72,7 @@ export default function Calendar() {
   bookings.forEach((b) => {
     const start = new Date(b.startDate);
     const end = new Date(b.endDate);
-    for (
-      const day = new Date(start);
-      day <= end;
-      day.setDate(day.getDate() + 1)
-    ) {
+    for (const day = new Date(start); day <= end; day.setDate(day.getDate() + 1)) {
       const key = formatDate(day);
       if (!bookedDates[key]) bookedDates[key] = [];
       bookedDates[key].push(b);
@@ -89,25 +85,18 @@ export default function Calendar() {
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() =>
-            setCurrentDate(
-              new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-            )
+            setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))
           }
           className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
           ←
         </button>
         <h2 className="text-xl font-semibold">
-          {currentDate.toLocaleString('default', {
-            month: 'long',
-            year: 'numeric',
-          })}
+          {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </h2>
         <button
           onClick={() =>
-            setCurrentDate(
-              new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-            )
+            setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))
           }
           className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
@@ -120,9 +109,7 @@ export default function Calendar() {
         <h3 className="font-medium mb-1">Legend:</h3>
         <div className="flex flex-wrap gap-3">
           {Object.entries(productColors).map(([productId, color]) => {
-            const productName = bookings.find(
-              (b) => b.product.id === Number(productId)
-            )?.product.name;
+            const productName = bookings.find((b) => b.product.id === Number(productId))?.product.name;
             return (
               <div key={productId} className="flex items-center gap-1">
                 <span className={`w-4 h-4 rounded ${color}`}></span>
@@ -136,10 +123,7 @@ export default function Calendar() {
       {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-1 border border-gray-300">
         {daysOfWeek.map((day) => (
-          <div
-            key={day}
-            className="bg-gray-100 text-center font-medium py-2 border border-gray-200"
-          >
+          <div key={day} className="bg-gray-100 text-center font-medium py-2 border border-gray-200">
             {day}
           </div>
         ))}
@@ -155,7 +139,10 @@ export default function Calendar() {
           return (
             <div
               key={index}
-              className="h-24 border border-gray-200 flex flex-col items-start p-1 bg-white hover:bg-blue-50 transition-colors duration-200"
+              onClick={() => dayBookings.length && setSelectedDay({ date: dateKey, bookings: dayBookings })}
+              className={`h-24 border border-gray-200 flex flex-col items-start p-1 bg-white hover:bg-blue-50 transition-colors duration-200 ${
+                dayBookings.length ? 'cursor-pointer' : ''
+              }`}
             >
               <span className="text-sm font-semibold">{date.getDate()}</span>
               <div className="flex gap-1 flex-wrap mt-1">
@@ -171,6 +158,36 @@ export default function Calendar() {
           );
         })}
       </div>
+
+      {/* Modal */}
+      {selectedDay && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <h3 className="text-lg font-bold mb-4">
+              Bookings for {selectedDay.date}
+            </h3>
+            <ul className="space-y-3">
+              {selectedDay.bookings.map((b) => (
+                <li key={b.id} className="border-b pb-2">
+                  <p><strong>Product:</strong> {b.product.name}</p>
+                  <p><strong>User:</strong> {b.user.name} {b.user.companyName && `(${b.user.companyName})`}</p>
+                  <p><strong>Address:</strong> {b.address}</p>
+                  <p><strong>From:</strong> {new Date(b.startDate).toLocaleDateString()}</p>
+                  <p><strong>To:</strong> {new Date(b.endDate).toLocaleDateString()}</p>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setSelectedDay(null)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
