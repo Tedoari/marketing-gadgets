@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 type Order = {
   id: number;
   item: string;
+  eventName?: string | null;
   address: string;
   companyName: string;
   userName: string;
@@ -53,6 +54,7 @@ const AdminOrders = () => {
             return {
               id: booking.id,
               item: booking.product?.name || "Unknown Product",
+              eventName: booking.eventName || null,
               address: booking.address,
               companyName: booking.user?.companyName || "Unknown Company",
               userName: booking.user?.name || "Unknown User",
@@ -77,10 +79,10 @@ const AdminOrders = () => {
   }, []);
 
   const handleDelete = async (orderId: number) => {
-    const confirm = window.confirm(
+    const confirmDelete = window.confirm(
       "Are you sure you want to cancel this order?"
     );
-    if (!confirm) return;
+    if (!confirmDelete) return;
 
     try {
       const res = await fetch(`/api/bookings?id=${orderId}`, {
@@ -112,7 +114,9 @@ const AdminOrders = () => {
             <div>
               <p className="font-medium">Order #{order.id}</p>
               <p>
-                {order.item} towards {order.address}
+                {order.item}
+                {order.eventName ? ` — ${order.eventName}` : ""} towards{" "}
+                {order.address}
               </p>
               <p className="text-sm text-gray-600">
                 {order.companyName} — {order.userName}

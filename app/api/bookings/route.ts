@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         endDate: new Date(endDate),
         userId: Number(userId),
         address,
-        eventName: eventName?.trim() || null, // Save event if provided
+        eventName: eventName?.trim() || null, // Save event name if provided
       },
     });
 
