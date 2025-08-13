@@ -7,6 +7,7 @@ interface Booking {
   startDate: string;
   endDate: string;
   address: string;
+  event?: string; // NEW
   user: { name: string; companyName?: string };
   product: { id: number; name: string };
 }
@@ -112,8 +113,9 @@ export default function Calendar() {
             const productName = bookings.find((b) => b.product.id === Number(productId))?.product.name;
             return (
               <div key={productId} className="flex items-center gap-1">
-                <span className={`w-4 h-4 rounded ${color}`}></span>
-                <span className="text-sm">{productName}</span>
+                <span className={`px-2 py-0.5 rounded text-sm text-white ${color}`}>
+                  {productName}
+                </span>
               </div>
             );
           })}
@@ -139,19 +141,22 @@ export default function Calendar() {
           return (
             <div
               key={index}
-              onClick={() => dayBookings.length && setSelectedDay({ date: dateKey, bookings: dayBookings })}
+              onClick={() =>
+                dayBookings.length && setSelectedDay({ date: dateKey, bookings: dayBookings })
+              }
               className={`h-24 border border-gray-200 flex flex-col items-start p-1 bg-white hover:bg-blue-50 transition-colors duration-200 ${
                 dayBookings.length ? 'cursor-pointer' : ''
               }`}
             >
               <span className="text-sm font-semibold">{date.getDate()}</span>
-              <div className="flex gap-1 flex-wrap mt-1">
+              <div className="flex flex-col gap-1 mt-1 w-full">
                 {dayBookings.map((b, idx) => (
                   <span
                     key={idx}
-                    title={b.product.name}
-                    className={`w-3 h-3 rounded-full ${productColors[b.product.id]}`}
-                  ></span>
+                    className={`px-1 rounded text-xs text-white truncate ${productColors[b.product.id]}`}
+                  >
+                    {b.product.name}
+                  </span>
                 ))}
               </div>
             </div>
@@ -170,7 +175,11 @@ export default function Calendar() {
               {selectedDay.bookings.map((b) => (
                 <li key={b.id} className="border-b pb-2">
                   <p><strong>Product:</strong> {b.product.name}</p>
-                  <p><strong>User:</strong> {b.user.name} {b.user.companyName && `(${b.user.companyName})`}</p>
+                  <p>
+                    <strong>User:</strong> {b.user.name}{' '}
+                    {b.user.companyName && `(${b.user.companyName})`}
+                  </p>
+                  {b.event && <p><strong>Event:</strong> {b.event}</p>}
                   <p><strong>Address:</strong> {b.address}</p>
                   <p><strong>From:</strong> {new Date(b.startDate).toLocaleDateString()}</p>
                   <p><strong>To:</strong> {new Date(b.endDate).toLocaleDateString()}</p>
